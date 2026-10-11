@@ -1,0 +1,68 @@
+﻿@model Hoor.Web.ViewModels.Reviews.ReviewInputModel
+
+<!-- نافذة ترك مراجعة
+================================================== -->
+<div id="small-dialog" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+    <!-- التبويبات -->
+    <div class="sign-in-form">
+
+        <ul class="popup-tabs-nav">
+            <li><a href="#tab">ترك مراجعة</a></li>
+        </ul>
+
+        <div class="popup-tabs-container">
+
+            <!-- التبويب -->
+            <div class="popup-tab-content" id="tab">
+
+                <!-- النموذج -->
+                <form method="post" id="leave-company-review-form" asp-action="LeaveReview" asp-controller="Reviews">
+                    <!-- نص الترحيب -->
+                    <div class="welcome-text">
+                        <h3>كيف كان العمل مع @Model.RecipientFirstName @Model.RecipientLastName؟</h3>
+
+                        <!-- تقييم المراجعة -->
+                        <div class="clearfix"></div>
+                        <div class="leave-rating-container">
+                            <div class="leave-rating margin-bottom-5">
+                                <input onclick="SelectRatingValue('5')" type="radio" id="rating-1" value="1" required>
+                                <label for="rating-1" class="icon-material-outline-star"></label>
+                                <input onclick="SelectRatingValue('4')" type="radio" id="rating-2" value="2" required>
+                                <label for="rating-2" class="icon-material-outline-star"></label>
+                                <input onclick="SelectRatingValue('3')" type="radio" id="rating-3" value="3" required>
+                                <label for="rating-3" class="icon-material-outline-star"></label>
+                                <input onclick="SelectRatingValue('2')" type="radio" id="rating-4" value="4" required>
+                                <label for="rating-4" class="icon-material-outline-star"></label>
+                                <input onclick="SelectRatingValue('1')" type="radio" id="rating-5" value="5" required>
+                                <label for="rating-5" class="icon-material-outline-star"></label>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <!-- تقييم المراجعة / نهاية-->
+                    </div>
+
+                    <textarea asp-for="Text" class="with-border" placeholder="مراجعة" id="message" cols="7" required></textarea>
+                    <input id="ratingInput" type="hidden" asp-for="Rating" value="0"/>
+                    <input type="hidden" asp-for="RecipientId" value="@Model.RecipientId"/>
+                </form>
+
+                <!-- الزر -->
+                <button class="button margin-top-35 full-width button-sliding-icon ripple-effect" type="submit" form="leave-company-review-form">ترك مراجعة <i class="icon-material-outline-arrow-right-alt"></i></button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- نافذة ترك مراجعة / نهاية -->
+
+<script>
+    function SelectRatingValue(rating) {
+        console.log(rating);
+        var inputName = `rating-${rating}`;
+
+        console.log(inputName);
+
+        document.getElementById('ratingInput').setAttribute('value', +rating);
+    }
+</script>

@@ -1,0 +1,220 @@
+﻿@using Hoor.Web.ViewModels.Users.Employers
+@using Hoor.Web.ViewModels.Reviews
+@using Hoor.Data.Models
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> signInManager
+@inject UserManager<ApplicationUser> userManager
+@model EmployerViewModel
+
+@{
+    var user = await userManager.GetUserAsync(this.User);
+}
+
+<!-- شريط العنوان
+================================================== -->
+<div class="single-page-header freelancer-header" data-background-image="/images/single-company.jpg">
+    <div class="container">
+        <div class="row"  style="direction:rtl; text-align:right ">
+            <div class="col-md-12">
+                <div class="single-page-header-inner">
+                    <div class="left-side">
+                        <div class="header-image freelancer-avatar"><img src="@Model.ProfileImageUrl" alt=""></div>
+                        <div class="header-details">
+                            <h3>
+                                @Model.FirstName @Model.LastName
+
+                                @if (Model.TagName is null && Model.Id == user.Id)
+                                {
+                                    <span><a asp-action="Settings" asp-controller="Users">أضف</a> اسماً تعريفياً</span>
+                                }
+                                else
+                                {
+                                    <span>  @Model.TagName  </span>
+                                }
+                            </h3>
+                            <ul>
+                                @if (Model.Reviews.Count() > 0)
+                                {
+                                    <li><div class="star-rating" data-rating="@Model.AverageRating"></div></li>
+                                }
+                                else
+                                {
+                                    <li><div class="not-rated">لم يتم التقييم بعد</div></li>
+                                }
+                                <li><img class="flag" src="/images/flags/@(Model.Location).svg" alt=""> @Model.LocationToString</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- محتوى الصفحة
+================================================== -->
+<div class="container">
+    <div class="row"  style="direction:rtl; text-align:right " >
+
+        <!-- المحتوى -->
+        <div class="col-xl-8 col-lg-8 content-right-offset">
+
+            <div class="single-page-section">
+                <h3 class="margin-bottom-25">عن صاحب العمل</h3>
+
+                @if (Model.Description is null && Model.Id == user.Id)
+                {
+                    <p class="not-verified-badge"><a asp-action="Settings" asp-controller="Users">أضف</a> وصفاً.</p>
+                }
+                else
+                {
+                    <p>@(Model.Description is not null ? Model.Description : "لا يوجد وصف حتى الآن.")</p>
+                }
+            </div>
+
+            <!-- قائمة داخل صندوق -->
+            <div class="boxed-list margin-bottom-60">
+                @if (Model.OpenJobs.Count > 0)
+                {
+                    <div class="boxed-list-headline">
+                        <h3><i class="icon-material-outline-business-center"></i> @Model.OpenJobs.Count فرص عمل مفتوحة</h3>
+                    </div>
+
+                    <div class="listings-container compact-list-layout">
+                        @foreach (var job in Model.OpenJobs)
+                        {
+                            <!-- قائمة الوظائف -->
+                            <a asp-action="Index" asp-controller="Jobs" asp-route-id="@job.Id" class="job-listing">
+
+                                <!-- تفاصيل الوظيفة -->
+                                <div class="job-listing-details">
+
+                                    <!-- التفاصيل -->
+                                    <div class="job-listing-description">
+                                        <h3 class="job-listing-title">@job.Title</h3>
+
+                                        <!-- تذييل قائمة الوظائف -->
+                                        <div class="job-listing-footer">
+                                            <ul>
+                                                <li><i class="icon-material-outline-location-on"></i> @job.LocationToString</li>
+                                                <li><i class="icon-material-outline-business-center"></i> @job.CategoryName</li>
+                                                <li><i class="icon-material-outline-access-time"></i>تم النشر @job.DateFormatted</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="boxed-list-headline">
+                        <h3><i class="icon-material-outline-business-center"></i>0 فرص عمل مفتوحة</h3>
+                    </div>
+                }
+            </div>
+            <!-- قائمة داخل صندوق / النهاية -->
+            <!-- قائمة داخل صندوق -->
+            <div class="boxed-list margin-bottom-60">
+                @if (Model.Reviews.Count() > 0)
+                {
+                    <div class="boxed-list-headline">
+                        <h3><i class="icon-material-outline-thumb-up"></i> @Model.Reviews.Count() تقييمات</h3>
+                    </div>
+                    <ul class="boxed-list-ul">
+
+                        @foreach (var review in Model.Reviews)
+                        {
+                            <li>
+                                <div class="boxed-list-item">
+                                    <!-- المحتوى -->
+                                    <div class="item-content">
+                                        <h4><span>@review.SenderFirstName @review.SenderLastName</span></h4>
+                                        <div class="item-details margin-top-10">
+                                            <div class="star-rating" data-rating="@review.Rating"></div>
+                                            <div class="detail-item"><i class="icon-material-outline-date-range"></i> @review.DateFormatted</div>
+                                        </div>
+                                        <div class="item-description">
+                                            <p>@review.Text</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+
+                    </ul>
+                }
+
+                else
+                {
+                    <div class="boxed-list-headline">
+                        <h3><i class="icon-material-outline-thumb-up"></i> 0 تقييمات</h3>
+                    </div>
+
+                    @if (Model.Id != user.Id)
+                    {
+                        <ul class="boxed-list-ul">
+                            <li>
+                                <div class="boxed-list-item">
+                                    <!-- المحتوى -->
+                                    <div class="item-content">
+                                        <div class="item-description">
+                                            <p>كن أول من يترك تقييمًا.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    }
+                }
+
+                @if (Model.Id != user.Id)
+                {
+                    <div class="centered-button margin-top-35">
+                        <a href="#small-dialog" class="popup-with-zoom-anim button button-sliding-icon">اترك تقييم <i class="icon-material-outline-arrow-right-alt"></i></a>
+                    </div>
+                }
+            </div>
+            <!-- قائمة داخل صندوق / النهاية -->
+
+        </div>
+
+
+        <!-- الشريط الجانبي -->
+        <div class="col-xl-4 col-lg-4">
+            <div class="sidebar-container">
+                @if (Model.Id == user.Id)
+                {
+                    <!-- الزر -->
+                    <a asp-action="Settings" asp-controller="Users" class="apply-now-button text-white">الإعدادات</a>
+                }
+                <!-- الودجت -->
+                <div class="sidebar-widget">
+                    <h3>ملفات تعريف الشبكات الاجتماعية</h3>
+                    <div class="freelancer-socials margin-top-25">
+                        <ul>
+                            <li><a href="#" title="Dribbble" data-tippy-placement="top"><i class="icon-brand-dribbble"></i></a></li>
+                            <li><a href="#" title="Twitter" data-tippy-placement="top"><i class="icon-brand-twitter"></i></a></li>
+                            <li><a href="#" title="Behance" data-tippy-placement="top"><i class="icon-brand-behance"></i></a></li>
+                            <li><a href="#" title="GitHub" data-tippy-placement="top"><i class="icon-brand-github"></i></a></li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- فاصل -->
+<div class="margin-top-15"></div>
+<!-- الفاصل / النهاية -->
+
+<div class="padding-bottom-100"></div>
+
+<partial name="BigFooterPartial" />
+<partial name="LeaveReviewPartial" model="new ReviewInputModel { RecipientFirstName = Model.FirstName, RecipientLastName = Model.LastName, RecipientId = Model.Id }" />

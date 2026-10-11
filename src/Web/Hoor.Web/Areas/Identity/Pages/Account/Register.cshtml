@@ -1,0 +1,288 @@
+﻿@page "/Register"
+@model RegisterModel
+@using Hoor.Common
+
+@{
+    ViewData["Title"] = "التسجيل";
+}
+<style>
+    .image-box {
+
+        height:200px;
+        border: 2px dashed #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        background-color: #f9f9f9;
+        cursor: pointer;
+    }
+
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        .image-box span {
+            font-size: 14px;
+            color: #999;
+        }
+
+    .upload-button {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: #007bff;
+        color: white;
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    /* تنسيق النافذة المنبثقة */
+    #verification-modal {
+        display: none; /* إخفاء النافذة بشكل افتراضي */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* خلفية مظللة */
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+        width: 300px;
+        margin: auto;
+    }
+
+    .close {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .label-info {
+        background-color: tomato;
+        margin: 1px;
+        border-radius: 8px;
+        padding: 3px;
+        display: inline-block;
+        }
+
+    .bootstrap-tagsinput{
+        display: block;
+    }
+</style>
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
+    }
+</style>
+
+<div class="margin-top-30"></div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-xl-6 offset-xl-3">
+            <div class="login-register-page">
+                <!-- Welcome Text -->
+                <div class="welcome-text">
+                    <h3 style="font-size: 26px;">لنقم بإنشاء حسابك!</h3>
+                    <span>لديك حساب بالفعل؟ <a href="Login">تسجيل الدخول!</a></span>
+                </div>
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <!-- Form -->
+                <form asp-route-returnUrl="@Model.ReturnUrl" method="post" id="register-form" style="direction:rtl" enctype="multipart/form-data">
+                    <div class="account-type">
+                        <div>
+                            <input asp-for="Input.UserType" value="@UserType.Freelancer" type="radio" id="freelancer-radio" class="account-type-radio" />
+                            <label asp-for="Input.UserType" for="freelancer-radio" class="ripple-effect-dark"><i class="icon-material-outline-account-circle"></i> مستقل</label>
+                        </div>
+
+                        <div>
+                            <input asp-for="Input.UserType" value="@UserType.Employer" type="radio" id="employer-radio" class="account-type-radio" />
+                            <label asp-for="Input.UserType" for="employer-radio" class="ripple-effect-dark"><i class="icon-material-outline-business-center"></i> صاحب عمل</label>
+                        </div>
+                    </div>
+
+                    <span asp-validation-for="Input.Location" class="text-danger"></span>
+                    <div class="input-with-icon-left">
+                        <select asp-for="Input.Location" asp-items="Html.GetEnumSelectList<Country>()" class="location-select dropdown with-border" data-size="5" title="اختر موقعك">
+                            <option value="0">اختر موقعك</option>
+                        </select>
+                    </div>
+
+                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                    <div class="input-with-icon-left">
+                        <i class="icon-material-outline-account-circle"></i>
+                        <input asp-for="Input.FirstName" type="text" class="input-text with-border" placeholder="الاسم الأول" required />
+                    </div>
+
+                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                    <div class="input-with-icon-left">
+                        <i class="icon-material-outline-account-circle"></i>
+                        <input asp-for="Input.LastName" type="text" class="input-text with-border" placeholder="الاسم الأخير" required />
+                    </div>
+
+
+                    <span asp-validation-for="Input.Username" class="text-danger"></span>
+                    <div class="input-with-icon-left">
+                        <i class="icon-material-outline-account-circle"></i>
+                        <input asp-for="Input.Username" type="text" class="input-text with-border" placeholder="اسم المستخدم" required />
+                    </div>
+
+
+                       <span asp-validation-for="Input.Email" class="text-danger"></span>
+                       <div class="input-with-icon-left">
+                           <i class="icon-material-baseline-mail-outline"></i>
+                           <input asp-for="Input.Email" type="text" class="input-text with-border" placeholder="عنوان البريد الإلكتروني" required />
+                       </div>
+                 
+                    <span id="email-status" class="text-danger"></span>
+
+
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    <div class="input-with-icon-left" title="يجب أن لا يقل عن 8 أحرف" data-tippy-placement="bottom">
+                        <i class="icon-material-outline-lock"></i>
+                        <input asp-for="Input.Password" type="password" class="input-text with-border" placeholder="كلمة المرور" required />
+                    </div>
+
+
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    <div class="input-with-icon-left" title="يجب ان تكون مطابقة للحقل اعلاة">
+                        <i class="icon-material-outline-lock"></i>
+                        <input asp-for="Input.ConfirmPassword" type="password" class="input-text with-border" placeholder="تأكيد كلمة المرور" required />
+                    </div>
+                    <!-- الرقم الوطني -->
+                    <span asp-validation-for="Input.NationalID" class="text-danger"></span>
+                    <div class="input-with-icon-left" title="يجب ان يكون الرقم كما هو في الهوية">
+                        <i class="icon-material-outline-account-circle"></i>
+                        <input asp-for="Input.NationalID" type="text" class="input-text with-border" placeholder="الرقم الوطني" required />
+                    </div>
+                    
+                    <span asp-validation-for="Input.Tags" class="text-danger"></span>
+                    <div class="input-with-icon-left" title="اكتب اي كلمة مفتاحية تدل على عملك. اكتب كلمة واضغط Enter">
+                        <i class="material-symbols-outlined"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M856-390 570-104q-12 12-27 18t-30 6q-15 0-30-6t-27-18L103-457q-11-11-17-25.5T80-513v-287q0-33 23.5-56.5T160-880h287q16 0 31 6.5t26 17.5l352 353q12 12 17.5 27t5.5 30q0 15-5.5 29.5T856-390ZM513-160l286-286-353-354H160v286l353 354ZM260-640q25 0 42.5-17.5T320-700q0-25-17.5-42.5T260-760q-25 0-42.5 17.5T200-700q0 25 17.5 42.5T260-640Zm220 160Z" /></svg></i>
+                        <input asp-for="Input.Tags" type="text" id="tagsInput"  class="form-control" data-role="tagsinput" placeholder="ادخل العلامات الخاصة بك" />
+
+                    </div>
+
+                    <div></div>
+                    <div class="row mb-4">
+                        <div class="col-md-6 text-center">
+                            <label for="front-id-card">صورة البطاقة الأمامية:</label>
+                            <div class="image-box" id="front-image-box" onclick="triggerFileInput('front-id-card')">
+                                <img src="#" id="front-img" alt="Alternate Text" />
+                                <span>الصورة الأمامية</span>
+
+                                <input asp-for="Input.FrontIDCard" id="front-id-card" onchange="previewImage(this, 'front-image-box')" style="display:none;" type="file" id="front-id-card" accept="image/*" onchange="previewImage(this, 'front-image-box')" required style="display:none;" />
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 text-center">
+                            <label for="back-id-card">صورة البطاقة الخلفية:</label>
+                            <div class="image-box" id="back-image-box" onclick="triggerFileInput('back-id-card')">
+                                <img src="#" id="front-img" alt="Alternate Text" />
+                                <span>الصورة الخلفية</span>
+                                <input asp-for="Input.BackIDCard" type="file" onchange="previewImage(this, 'back-image-box')" style="display:none;" id="back-id-card" accept="image/*" required />
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <button class="button full-width button-sliding-icon ripple-effect margin-top-10" type="submit" form="register-form">تسجيل <i class="icon-material-outline-arrow-right-alt"></i></button>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="margin-bottom-100"></div>
+
+<partial name="BigFooterPartial"/>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            $('#tagsInput').tagsinput({
+                maxTags: 5, // الحد الأقصى لعدد العلامات
+                trimValue: true, // إزالة المسافات الزائدة
+                allowDuplicates: false // منع التكرار
+            });
+        });
+    </script>
+
+    <script>
+        let freelancerInput = document.getElementById("freelancer-radio");
+        let employerInput = document.getElementById("employer-radio");
+
+        freelancerInput.setAttribute("checked", true);
+
+        employerInput.addEventListener("click", () => {
+            freelancerInput.removeAttribute("checked");
+            employerInput.setAttribute("checked", true);
+        })
+
+        freelancerInput.addEventListener("click", () => {
+            employerInput.removeAttribute("checked");
+            freelancerInput.setAttribute("checked", true);
+        })
+
+
+            function triggerFileInput(inputId) {
+                const fileInput = document.getElementById(inputId);
+                fileInput.click();
+            }
+
+        function previewImage(input, boxId) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const box = document.getElementById(boxId);
+                    const imgElement = box.querySelector("img"); // ابحث عن عنصر img داخل الصندوق
+                    if (imgElement) {
+                        imgElement.src = e.target.result; // قم بتعيين مصدر الصورة
+                        imgElement.style.display = "block"; // اجعل الصورة مرئية
+                        const placeholder = box.querySelector("span"); // أخفِ النص البديل إن وُجد
+                        if (placeholder) {
+                            placeholder.style.display = "none";
+                        }
+                    }
+                };
+                reader.readAsDataURL(file);
+            } else {
+                console.log("No file selected.");
+            }
+        }
+
+
+
+    </script>
+}

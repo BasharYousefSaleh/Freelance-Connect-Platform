@@ -1,0 +1,305 @@
+﻿@model Hoor.Web.ViewModels.Contracts.LocleCheckoutViewModel
+@inject ExchangeRateService _ExchangeRateService
+<style>
+    .form-check-label{
+    padding-right: 1.25rem;
+    }
+</style>
+@{
+    List<ExchangeRateService.ExchangeRate> Currencies = new List<ExchangeRateService.ExchangeRate>();
+    var citys = await _ExchangeRateService.GetCityExchangeRatesAsync();
+    foreach (var item in citys)
+    {
+
+        foreach (var item1 in item.ExchangeRates)
+        {
+            ExchangeRateService.ExchangeRate currency = new ExchangeRateService.ExchangeRate()
+                    {
+                        Id = item1.Id,
+                        Name = item1.Name,
+                        Buy = item1.Buy,
+                        Sale = item1.Sale,
+                        CoinIcon = item1.CoinIcon
+                    };
+            Currencies.Add(currency);
+        }
+        break;
+
+
+    }
+}
+
+<div class="container mt-5" style="    direction: rtl;">
+    <!-- عنوان الصفحة -->
+    <div class="text-center mb-4">
+        <h2 class="font-weight-bold">إتمام عملية الدفع</h2>
+        <p class="text-muted">يرجى مراجعة التفاصيل أدناه وإرفاق صورة إيصال العملية</p>
+    </div>
+
+    <!-- تفاصيل وسيلة الدفع -->
+    <div class="card mx-auto" style="max-width: 500px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <div class="card-body text-center">
+            <!-- أيقونة وسيلة الدفع -->
+            <img src="@Model.Icon" alt="وسيلة الدفع" class="img-fluid mb-3" style="max-width: 150px; border-radius: 8px; border: 1px solid #ddd;">
+
+            <!-- اسم وسيلة الدفع -->
+            <p style="    font-size: xx-large;" class="font-weight-bold mb-3">
+                @Model.Name
+            </p>
+
+            <!-- تفاصيل الحساب -->
+            <div class="text-right">
+                <p class="mb-2">
+                    <span style="color: #F37325 !important" class="font-weight-bold text-primary">عملة الدفع:</span>
+                    <!-- Select -->
+                    <div class="form-check">
+                        <input style="border-color: #F37325;" checked class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="USD">
+                        <label class="form-check-label font-weight-bold" for="flexRadioDefault1">
+                            دولار امريكي <img width="30.8rem" src="~/pyments/icons8_us_dollar_50px.png" />
+                        </label>
+                    </div>
+                    @if (Model.PaymentType == "Locle")
+                    {
+
+                    <div class="form-check">
+                        <input style="border-color: #F37325;" class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="SAR">
+                        <label class="form-check-label font-weight-bold" for="flexRadioDefault2">
+                            ريـال سعودي <img width="30.8rem" src="~/pyments/rial_50px.png" />
+                        </label>
+                    </div>
+                        <div class="form-check">
+                        <input style="border-color: #F37325;" class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" value="YER">
+                        <label class="form-check-label font-weight-bold" for="flexRadioDefault3">
+                            ريـال يمني <img width="30.8rem" src="~/pyments/rial_50px.png" />
+                        </label>
+                    </div>
+                    }
+                    <!-- End Select -->
+                </p>
+                <p class="mb-2">
+                    <span style="color: #F37325 !important" class="font-weight-bold text-primary">المبلغ بالدولار:</span>
+                    <div class="js-focus-state input-group">
+                        <input id="OfferFixedPrice" type="text" class="form-control font-weight-bold" value="@Model.OfferFixedPrice " readonly>
+                        <div class="input-group-append">
+                            <a style="color: #F37325 !important" class="js-clipboard input-group-text" href="javascript:;"
+                               data-content-target="#OfferFixedPrice"
+                               data-class-change-target="#copyIcon"
+                               data-default-class="fas fa-clone"
+                               data-success-class="fas fa-check">
+                                <span id="copyIcon" class="fas fa-clone"></span>
+                            </a>
+                        </div>
+                    </div>
+                </p>
+                <p class="mb-2" id="exchange" style="display:none; ">
+                    <span id="ExchangeCurrTitleSAR"  style="color: #F37325 !important" class="font-weight-bold text-primary">المبلغ بالسعودي:</span>
+                    <span id="ExchangeCurrTitleYER" style="color: #F37325 !important" class="font-weight-bold text-primary">المبلغ باليمني:</span>
+                    <div id="exchangeinput" class="js-focus-state input-group" style="display:none;">
+                        <input id="ExchangeCurr" type="text" class="form-control font-weight-bold" readonly>
+                        <div class="input-group-append">
+                            <a style="color: #F37325 !important" class="js-clipboard input-group-text" href="javascript:;"
+                               data-content-target="#ExchangeCurr"
+                               data-class-change-target="#copyIcon"
+                               data-default-class="fas fa-clone"
+                               data-success-class="fas fa-check">
+                                <span id="copyIcon" class="fas fa-clone"></span>
+                            </a>
+                        </div>
+                    </div>
+                </p>
+                <p class="mb-2">
+                    <span style="color: #F37325 !important" class="font-weight-bold text-primary">رقم الحساب:</span>
+                    <div class="js-focus-state input-group">
+                        <input id="accountNumber" type="text" class="form-control font-weight-bold" value="@Model.AccountNumber" readonly>
+                        <div class="input-group-append">
+                            <a style="color: #F37325 !important" class="js-clipboard input-group-text" href="javascript:;"
+                               data-content-target="#accountNumber"
+                               data-class-change-target="#copyIcon"
+                               data-default-class="fas fa-clone"
+                               data-success-class="fas fa-check">
+                                <span id="copyIcon" class="fas fa-clone"></span>
+                            </a>
+                        </div>
+                    </div>
+                </p>
+                <p class="mb-2">
+                    <span style="color: #F37325 !important" class="font-weight-bold text-primary">اسم الحساب:</span>
+                    <div class="js-focus-state input-group">
+                        <input id="AccountName" type="text" class="form-control font-weight-bold" value="@Model.AccountName" readonly>
+                        <div class="input-group-append">
+                            <a style="color: #F37325" class="js-clipboard input-group-text" href="javascript:;"
+                               data-content-target="#AccountName"
+                               data-class-change-target="#copyIcon"
+                               data-default-class="fas fa-clone"
+                               data-success-class="fas fa-check">
+                                <span id="copyIcon" class="fas fa-clone"></span>
+                            </a>
+                        </div>
+                    </div>
+                </p>
+                <p class="mb-2">
+                    <span style="font-size: x-large; color: red">*</span><span>تأكد من نسخ الرقم بشكل صحيح.</span>
+                </p>
+                <p class="mb-2">
+                    <span style="font-size: x-large; color: red">*</span>  <span>تأكد من اسم صاحب الحساب مطابق للاسم الظاهر امامك.</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- حقل رفع صورة الإيصال -->
+    <div class="card mx-auto mt-4" style="max-width: 500px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <div class="card-body text-right">
+            <p style="font-size: large;" class="font-weight-bold mb-3 text-center">إرفاق صورة إيصال العملية</p>
+            <form enctype="multipart/form-data" id="LocleCheckOout" asp-action="CompleteLoclePayment" asp-controller="Payments">
+                <div class="uploadButton margin-top-0">
+                    <input class="uploadButton-input" required name="PaymentImage" type="file" id="upload" accept="image/*" onchange="previewImage(event)" />
+                    <label class="uploadButton-button ripple-effect" for="upload">رفع الملف</label>
+                    <input hidden id="PaymentMethodInput" name="PaymentMethod" value="@Model.Id" />
+                    <input hidden id="contractIdInput" name="contractId" value="@Model.ContractId" />
+                    <input hidden id="CurrnceInput" name="Currnce" />
+                    <input hidden id="CurrnceAmountInput" name="CurrnceAmount" />
+
+                    <span class="uploadButton-file-name">يمكنك فقط رفع الملفات بصيغ jpeg,png,jpg</span>
+                </div>
+            </form>
+            <!-- مكان عرض الصورة -->
+            <div id="imagePreview" class="mt-3" style="display: @(Model.ImageUrl != null ? "block" : "none"); position: relative;">
+                <img id="preview" src="@Model.ImageUrl" alt="صورة الإيصال" style="max-width: 100%; height: auto; border-radius: 8px;" />
+                <!-- زر الإغلاق -->
+                <button id="closeButton" style="position: absolute; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.5); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 16px;">&times;</button>
+            </div>
+        </div>
+    </div>
+
+    <a class=" popup-with-zoom-anim   ripple-effect" id="PaymentErrorKey" href="#Payment-Error" style="visibility:hidden;"> </a>
+    <!-- زر تأكيد الدفع -->
+    <div class="text-center mt-4">
+        <div style="display:none;" id="spinnerloding" class="spinner-border text-danger" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <button id="btnpyment" onclick="saveLoclePayment()"  class="btn btn-success btn-lg px-5">
+
+            تأكيد الدفع
+        </button>
+    </div>
+</div>
+<div style="    height: 67px;"></div>
+@* <form id="complete-contract-form"  asp-action="Thanks" asp-controller="Contracts"> *@
+@*     <input type="text" hidden name="action" value="complete" /> *@
+@*     <input type="text" hidden name="HeadTitle" value="نمت عملية الدفع" /> *@
+@*     <input type="text" hidden name="Title" value="سيتم التحقق من بيانات عملية الدفع والرد لك مباشرتا. شكرا لك." /> *@
+@*     <input type="text" hidden name="contractId" value="@Model.Id" /> *@
+@* </form> *@
+
+<partial name="/Views/Shared/PaymentErrorParital.cshtml" model="@Model"/>
+
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        const imagePreview = document.getElementById('imagePreview');
+        const preview = document.getElementById('preview');
+
+        reader.onload = function() {
+            if (reader.readyState === 2) {
+                preview.src = reader.result;
+                imagePreview.style.display = 'block';
+            }
+        }
+
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    // إضافة حدث لإغلاق الصورة
+    document.getElementById('closeButton').addEventListener('click', function() {
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadInput = document.getElementById('upload');
+
+        imagePreview.style.display = 'none'; // إخفاء الصورة
+        uploadInput.value = ''; // إعادة تعيين حقل الرفع
+    });
+</script>
+<script>
+    $(document).on('ready', function () {
+      // initialization of clipboard
+      $.HSCore.components.HSClipboard.init('.js-clipboard');
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#CurrnceInput').val('USD');
+        $('#CurrnceAmountInput').val(@Model.OfferFixedPrice);
+        $('#exchangeinput').hide();
+        $('#exchange').hide();
+        const exchangeRates = {
+            sar: @Currencies.FirstOrDefault(c => c.Id == 5)?.Sale ?? 0,
+            yer: @Currencies.FirstOrDefault(c => c.Id == 6)?.Sale ?? 0
+        };
+
+        $('input[name="flexRadioDefault"]').change(function () {
+            $('#exchange').hide();
+            $('#exchangeinput').hide();
+            const selectedCurrency = $(this).val();
+            const usdAmount = parseFloat($('#OfferFixedPrice').val()) || 0;
+
+            if (selectedCurrency === 'SAR') {
+                // const sarAmount = (usdAmount * exchangeRates.sar).toFixed(2);
+                const usdToYER = exchangeRates.yer; // سعر الريال اليمني مقابل الدولار
+                const yerToSAR = exchangeRates.sar; // سعر الريال السعودي مقابل الريال اليمني
+
+                // تحويل المبلغ من دولار إلى ريال سعودي
+                const sarAmount = ((usdToYER / yerToSAR ) * usdAmount ).toFixed(2);
+                $('#ExchangeCurr').val(sarAmount);
+                $('#ExchangeCurrTitleSAR').show();
+                $('#ExchangeCurrTitleYER').hide();
+                $('#exchange').show();
+                $('#exchangeinput').show();
+                $('#CurrnceAmountInput').val(sarAmount);
+                
+            } else if (selectedCurrency === 'YER') {
+                const yerAmount = (usdAmount * exchangeRates.yer).toFixed(2);
+                $('#ExchangeCurr').val(yerAmount);
+                $('#ExchangeCurrTitleYER').show();
+                $('#ExchangeCurrTitleSAR').hide();
+                $('#exchange').show();
+                $('#exchangeinput').show();
+                $('#CurrnceAmountInput').val(yerAmount);
+                
+            } else {
+                $('#exchange').hide();
+                $('#exchangeinput').hide();
+                $('#CurrnceAmountInput').val(usdAmount);
+            }
+            $('#CurrnceInput').val(selectedCurrency);
+        });
+    });
+</script>
+<script>
+
+    function saveLoclePayment() {
+    event.preventDefault(); // منع الإرسال التلقائي للنموذج
+    document.getElementById('spinnerloding').style.display = 'inline-block'; // إظهار الحلقة المتحركة
+    document.getElementById('btnpyment').style.display = 'none'; // إخفاء زر الإرسال
+    var uploadInput = document.getElementById('upload');
+    var form = document.getElementById('LocleCheckOout');
+    var errorkey = document.getElementById('PaymentErrorKey');
+
+    if (uploadInput.files.length === 0 ) {
+        // إذا لم يتم رفع صورة، اجلب الـ Partial View
+          setTimeout(function () {
+            errorkey.click(); // تنفيذ النقر بعد لحظة قصيرة للتأكد من التنفيذ
+        }, 100);
+        console.log('error');
+        setTimeout(function () {
+        document.getElementById('spinnerloding').style.display = 'none'; // إخفاء الحلقة المتحركة
+        document.getElementById('btnpyment').style.display = 'inline-block'; // إظهار زر الإرسال
+        }, 2000);
+      
+    } else {
+        // إذا كانت الصورة مرفوعة، أرسل النموذج
+        form.submit();
+    }
+
+    }
+
+</script>

@@ -1,0 +1,34 @@
+﻿@model Hoor.Web.ViewModels.Contracts.SingleContractViewModel
+<div id="complete-contract" class="zoom-anim-dialog mfp-hide small-dialog-1">
+
+    <!-- التبويبات -->
+    <div class="sign-in-form">
+
+        <ul class="popup-tabs-nav">
+            <li><a href="#tab1">إكمال العقد</a></li>
+        </ul>
+
+        <div class="popup-tabs-container">
+
+            <!-- التبويب -->
+            <div class="popup-tab-content" id="tab">
+
+                <!-- نص الترحيب -->
+                <div class="welcome-text">
+                    <h3>هل أنت متأكد أنك تريد إكمال العقد مع @Model.FreelancerFirstName @Model.FreelancerLastName؟</h3>
+                </div>
+
+                <form id="complete-contract-form" asp-action="Thanks" asp-controller="Contracts">
+                    <input type="text" hidden name="action" value="complete" />
+                    <input type="text" hidden name="HeadTitle" value="اغلاق المشروع" />
+                    <input type="text" hidden name="Title" value="شكراً لك تم اكمال الوضيفة . نتمنا لك التوفيق" />
+                    <input type="text" hidden name="contractId" value="@Model.Id" />
+                </form>
+
+                <!-- زر -->
+                <button class="margin-top-15 button w-100 button-sliding-icon ripple-effect" type="submit" form="complete-contract-form">إكمال <i class="icon-material-outline-arrow-right-alt"></i></button>
+
+            </div>
+        </div>
+    </div>
+</div>

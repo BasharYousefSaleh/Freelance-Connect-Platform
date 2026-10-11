@@ -1,0 +1,193 @@
+﻿@using Hoor.Common
+@model Hoor.Web.ViewModels.Users.UserSettingsViewModel
+    <!-- حاوية لوحة التحكم -->
+
+<div class="dashboard-container">
+
+
+    <!-- محتوى لوحة التحكم
+        ================================================== -->
+    <div class="dashboard-content-container" data-simplebar>
+        <div class="dashboard-content-inner">
+
+            <!-- صف -->
+            <div class="row"  style="direction:rtl; text-align:right ">
+                <form id="update-user-info-form" enctype="multipart/form-data" method="post" asp-action="UpdateProfileInfo" asp-controller="Users">
+
+                    <!-- صندوق لوحة التحكم -->
+                    <div class="col-xl-12">
+                        <div class="dashboard-box margin-top-0">
+
+                            <!-- العنوان الرئيسي -->
+                            <div class="headline">
+                                <h3><i class="icon-material-outline-account-circle"></i> حسابي</h3>
+                            </div>
+
+                            <div class="content with-padding padding-bottom-0">
+
+                                <div class="row">
+
+                                    <div class="col-auto">
+                                        <div class="avatar-wrapper" data-tippy-placement="bottom" title="تغيير الصورة الرمزية">
+                                            <img class="profile-pic" src="@Model.UserViewModel.ProfileImageUrl" alt="" />
+                                            <div class="upload-button"></div>
+                                            <input name="profilePicture" class="file-upload" type="file" accept="image/*" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col">
+                                        <div class="row">
+                                            <div class="col-xl-6">
+                                                <div class="submit-field">
+                                                    <h5>الاسم الأول</h5>
+                                                    <input asp-for="UserInfoInputModel.FirstName" type="text" class="with-border" value="@Model.UserViewModel.FirstName">
+                                                    <span asp-validation-for="UserInfoInputModel.FirstName" class="text-danger"></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xl-6">
+                                                <div class="submit-field">
+                                                    <h5>الاسم الأخير</h5>
+                                                    <input asp-for="UserInfoInputModel.LastName" type="text" class="with-border" value="@Model.UserViewModel.LastName">
+                                                    <span asp-validation-for="UserInfoInputModel.LastName" class="text-danger"></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xl-6">
+                                                @*نوع الحساب*@
+                                                <div class="submit-field">
+                                                    <h5>نوع الحساب</h5>
+                                                    <div class="account-type">
+                                                        @if (User.IsInRole("Freelancer"))
+                                                        {
+                                                            <div>
+                                                                <input disabled type="radio" name="account-type-radio" id="freelancer-radio" class="account-type-radio" checked />
+                                                                <label for="freelancer-radio"><i class="icon-material-outline-account-circle"></i> مستقل</label>
+                                                            </div>
+                                                        }
+                                                        @if (User.IsInRole("Employer"))
+                                                        {
+                                                            <div>
+                                                                <input disabled type="radio" name="account-type-radio" id="employer-radio" class="account-type-radio" checked />
+                                                                <label for="employer-radio"><i class="icon-material-outline-business-center"></i> صاحب عمل</label>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xl-6">
+                                                <div class="submit-field">
+                                                    <h5>الجنسية</h5>
+                                                    <div class="input-with-icon-left">
+
+                                                        <select asp-for="UserInfoInputModel.Location" readonly asp-items="Html.GetEnumSelectList<Country>()" class="location-select dropdown with-border" data-size="5">
+                                                            <option selected value="@Model.UserViewModel.Location">@Model.UserViewModel.LocationToString</option>
+                                                        </select>
+                                                        <input type="hidden" asp-for="UserInfoInputModel.Location" value="@Model.UserViewModel.Location" />
+                                                        <span asp-validation-for="UserInfoInputModel.Location" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- صندوق لوحة التحكم -->
+                    <div class="col-xl-12">
+                        <div class="dashboard-box">
+
+                            <!-- العنوان الرئيسي -->
+                            <div class="headline">
+                                <h3><i class="icon-material-outline-face"></i> ملفي الشخصي</h3>
+                            </div>
+
+                            <div class="content">
+                                <ul class="fields-ul">
+                                    <li>
+                                        <div class="row">
+                                            <div class="col-xl-6">
+                                                <div class="submit-field">
+                                                    <h5>العبارة التعريفية</h5>
+                                                    <input asp-for="UserInfoInputModel.TagName" type="text" class="with-border" placeholder="أضف عبارة تعريفية" value="@Model.UserViewModel.TagName">
+                                                    <span asp-validation-for="UserInfoInputModel.TagName" class="text-danger"></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xl-12">
+                                                <div class="submit-field">
+                                                    <h5>قدم نفسك</h5>
+                                                    <textarea asp-for="UserInfoInputModel.Description" cols="30" placeholder="@(Model.UserViewModel.Description is null ? "أضف وصفاً" : Model.UserViewModel.Description)" rows="5" class="with-border"></textarea>
+                                                    <span asp-validation-for="UserInfoInputModel.Description" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- زر -->
+                <div class="col-xl-12">
+                    <button type="submit" form="update-user-info-form" class="button ripple-effect big margin-top-30">تحديث الملف الشخصي</button>
+                </div>
+
+                <!-- صندوق لوحة التحكم -->
+                <div class="col-xl-12">
+                    <div id="test1" class="dashboard-box">
+
+                        <!-- العنوان الرئيسي -->
+                        <div class="headline">
+                            <h3><i class="icon-material-outline-lock"></i> كلمة المرور</h3>
+                        </div>
+
+                        <form method="post" id="update-user-password-form" asp-action="ChangePassword" asp-controller="Users">
+                            <div class="content with-padding">
+                                <div class="row">
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>كلمة المرور الحالية</h5>
+                                            <input asp-for="UserPasswordInputModel.CurrentPassword" type="password" class="with-border">
+                                            <span asp-validation-for="UserPasswordInputModel.CurrentPassword" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>كلمة المرور الجديدة</h5>
+                                            <input asp-for="UserPasswordInputModel.NewPassword" type="password" class="with-border">
+                                            <span asp-validation-for="UserPasswordInputModel.NewPassword" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>أعد كتابة كلمة المرور الجديدة</h5>
+                                            <input asp-for="UserPasswordInputModel.RepeatNewPassword" type="password" class="with-border">
+                                            <span asp-validation-for="UserPasswordInputModel.RepeatNewPassword" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- زر -->
+                <div class="col-xl-12">
+                    <button type="submit" form="update-user-password-form" class="button ripple-effect big margin-top-30">تغيير كلمة المرور</button>
+                </div>
+            </div>
+            <!-- صف / نهاية -->
+            <partial name="SmallFooterPartial" />
+        </div>
+    </div>
+        <partial name="DashboardPartial" />
+
+</div>

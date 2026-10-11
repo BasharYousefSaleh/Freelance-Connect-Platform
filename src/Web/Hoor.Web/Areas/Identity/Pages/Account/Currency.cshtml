@@ -1,0 +1,32 @@
+﻿@page "/Currency"
+@model Hoor.Web.Areas.Identity.Pages.Account.CurrencyModel
+
+@{
+}
+
+<h1>أسعار العملات</h1>
+
+<table border="1" style="width: 100%; text-align: center;">
+    <thead>
+        <tr>
+            <th>العملة</th>
+            <th>سعر الشراء</th>
+            <th>سعر البيع</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Currencies)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td>@item.BuyPrice</td>
+                <td>@item.SellPrice</td>
+            </tr>
+        }
+        <tr>
+            @* <th>@Model.jsonrespons </th> *@
+            
+        </tr>
+    </tbody>
+</table>

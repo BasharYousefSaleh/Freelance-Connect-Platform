@@ -1,0 +1,91 @@
+﻿@model IEnumerable<Hoor.Web.ViewModels.Contracts.UserContractsListViewModel>
+
+@{
+    ViewData["Title"] = "عقودي";
+
+    var contractsCount = (int)ViewData["ContractsCount"];
+}
+<!-- Dashboard Container -->
+<div class="dashboard-container">
+
+    <!-- Dashboard Content
+    ================================================== -->
+    <div class="dashboard-content-container" data-simplebar>
+        <div class="dashboard-content-inner" >
+
+            <!-- Dashboard Headline -->
+            <div class="dashboard-headline"  style="direction:rtl; text-align:right ">
+                <h3>عقودي</h3>
+            </div>
+
+            <!-- Row -->
+            <div class="row">
+
+                <!-- Dashboard Box -->
+                <div class="col-xl-12">
+                    <div class="dashboard-box margin-top-0">
+
+                        <!-- Headline -->
+                        <div class="headline"  style="direction:rtl; text-align:right ">
+                            <h3><i class="icon-material-outline-assignment"></i> @contractsCount قائمة العقود</h3>
+                        </div>
+
+                        <div class="content"  style=" text-align:center ">
+                            <ul class="dashboard-box-list">
+                                @foreach (var contract in Model)
+                                {
+                                    var contractStatus = contract.StatusToString == "Ongoing" && contract.TimeLeft < 0 ? "Finished" : contract.StatusToString;
+
+                                    <li>
+                                        <!-- Job Listing -->
+                                        <div class="job-listing width-adjustment">
+
+                                            <!-- Job Listing Details -->
+                                            <div class="job-listing-details">
+
+                                                <!-- Details -->
+                                                <div class="job-listing-description">
+
+                                                    <h3 class="job-listing-title"><a asp-controller="Contracts" asp-action="Index" asp-route-id="@contract.Id">عقد #@contract.ShortId</a> <span class="dashboard-status-button @contract.TagColor">@contractStatus</span></h3>
+
+                                                    <!-- Job Listing Footer -->
+                                                    <div class="job-listing-footer">
+                                                        <ul>
+                                                            <li>@contract.OfferJobTitle</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Task Details -->
+                                        <ul class="dashboard-task-info">
+                                            <li><strong>@contract.OfferDeliveryDays</strong><span>أيام التسليم</span></li>
+                                            <li><strong>$@contract.OfferFixedPrice</strong><span>الميزانية</span></li>
+
+                                            @if (contract.TimeLeft > 0)
+                                            {
+                                                <li><strong>@contract.TimeLeft</strong><span>الأيام المتبقية</span></li>
+                                            }
+                                            @if (contract.TimeLeft <= 0)
+                                            {
+                                                <li><strong>0</strong><span>الأيام المتبقية</span></li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                            <!-- Spacer -->
+                            <div class="margin-top-90"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Row / End -->
+            <partial name="SmallFooterPartial" />
+        </div>
+    </div>
+    <!-- Dashboard Content / End -->
+        <partial name="DashboardPartial" />
+
+</div>

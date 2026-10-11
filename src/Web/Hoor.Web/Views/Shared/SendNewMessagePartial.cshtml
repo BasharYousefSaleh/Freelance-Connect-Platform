@@ -1,0 +1,42 @@
+﻿@model Hoor.Web.ViewModels.Messages.NewMessageInputModel
+
+<!-- نافذة إرسال رسالة مباشرة
+================================================== -->
+<div id="small-dialog-2" class="zoom-anim-dialog mfp-hide dialog-with-tabs">
+
+    <!-- التبويبات -->
+    <div class="sign-in-form">
+
+        <ul class="popup-tabs-nav">
+            <li><a href="#tab2">إرسال رسالة</a></li>
+        </ul>
+
+        <div class="popup-tabs-container">
+
+            <!-- التبويب -->
+            <div class="popup-tab-content" id="tab2">
+
+                <!-- نص الترحيب -->
+                <div class="welcome-text">
+                    <h3>رسالة مباشرة إلى</h3>
+                </div>
+
+                <!-- النموذج -->
+                <form asp-action="NewMessage" asp-controller="Messages" method="post" id="send-pm">
+
+                    <div class="input-with-icon-left">
+                        <i class="icon-material-outline-account-circle"></i>
+                        <input asp-for="RecipientUsername" type="text" class="input-text with-border" id="name" placeholder="اسم المستخدم" />
+                    </div>
+
+                    <textarea asp-for="Message" cols="10" placeholder="رسالة" class="with-border" required></textarea>
+                </form>
+
+                <!-- الزر -->
+                <button class="button full-width button-sliding-icon ripple-effect" type="submit" form="send-pm">إرسال <i class="icon-material-outline-arrow-right-alt"></i></button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- نافذة إرسال رسالة مباشرة / نهاية -->

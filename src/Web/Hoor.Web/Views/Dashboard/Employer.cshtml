@@ -1,0 +1,64 @@
+﻿@model Hoor.Web.ViewModels.Dashboard.EmployerDashboardViewModel
+
+<!-- Dashboard Container -->
+<div class="dashboard-container">
+
+    <div class="dashboard-content-container" data-simplebar style="direction:rtl; text-align:right ">
+    <div class="dashboard-content-container text-right" data-simplebar>
+        <div class="dashboard-content-inner">
+
+            <!-- Dashboard Headline -->
+            <div class="dashboard-headline">
+                <h3>مرحباً، @Model.Name!</h3>
+                <span>نحن سعداء برؤيتك مجددًا!</span>
+            </div>
+
+            <!-- Fun Facts Container -->
+            <div class="fun-facts-container">
+                <div class="fun-fact" data-fun-fact-color="#36bd78">
+                    <div class="fun-fact-text">
+                        <span>الرصيد</span>
+                        <h4>@Model.TotalMoneyEarned</h4>
+                    </div>
+                    <div class="fun-fact-icon"><i class="icon-feather-dollar-sign"></i></div>
+                </div>
+                <div class="fun-fact" data-fun-fact-color="#36bd78">
+                    <div class="fun-fact-text">
+                        <span>العقود المنتهية</span>
+                        <h4>@Model.FinishedContractsCount</h4>
+                    </div>
+                    <div class="fun-fact-icon"><i class="icon-material-outline-check"></i></div>
+                </div>
+                <div class="fun-fact" data-fun-fact-color="#b81b7f">
+                    <div class="fun-fact-text">
+                        <span>إعلانات الوظائف</span>
+                        <h4>@Model.JobPostedCount</h4>
+                    </div>
+                    <div class="fun-fact-icon"><i class="icon-line-awesome-sticky-note-o"></i></div>
+                </div>
+                <div class="fun-fact" data-fun-fact-color="#efa80f">
+                    <div class="fun-fact-text">
+                        <span>التقييمات</span>
+                        <h4>@Model.ReviewsCount</h4>
+                    </div>
+                    <div class="fun-fact-icon"><i class="icon-material-outline-rate-review"></i></div>
+                </div>
+
+                <!-- Last one has to be hidden below 1600px, sorry :( -->
+                <div class="fun-fact" data-fun-fact-color="#2a41e6">
+                    <div class="fun-fact-text">
+                        <span>العقود الجارية</span>
+                        <h4>@Model.OngoingContractsCount</h4>
+                    </div>
+                    <div class="fun-fact-icon"><i class="icon-line-awesome-sticky-note-o"></i></div>
+                </div>
+            </div>
+
+            <partial name="SmallFooterPartial" />
+        </div>
+    </div>
+    <!-- Dashboard Content / End -->
+</div>
+        <partial name="DashboardPartial" />
+
+</div>

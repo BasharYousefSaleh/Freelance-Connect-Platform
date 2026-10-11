@@ -1,0 +1,47 @@
+﻿@using Microsoft.AspNetCore.Http
+@model Hoor.Web.ViewModels.Contracts.SingleContractViewModel
+<div id="payment-partial" class="zoom-anim-dialog mfp-hide small-dialog-1">
+
+    <!-- التبويبات -->
+    <div class="sign-in-form">
+
+        <ul class="popup-tabs-nav">
+            <li><a href="#tab1">إكمال العقد</a></li>
+        </ul>
+
+        <div class="popup-tabs-container">
+
+            <!-- التبويب -->
+            <div class="popup-tab-content" id="tab">
+
+                <!-- نص الترحيب -->
+                <div class="welcome-text">
+                    <h3>اضغط على الانتقال الى الدفع لتوجيهك الى صفحة الدفع</h3>
+                </div>
+             
+
+                <form id="Checkout-contract-form" asp-action="PaymentMethods" asp-controller="Payments">
+                    @Html.AntiForgeryToken()
+                      <input type="text" hidden name="action" value="complete" /> 
+                    <input type="text" hidden name="contractId" value="@Model.Id" />
+                </form>
+
+                <!-- زر -->
+                <button class="margin-top-15 button w-100 button-sliding-icon ripple-effect" type="submit" form="Checkout-contract-form">الانتقال الى الدفع<i class="icon-material-outline-arrow-right-alt"></i></button>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+         
+
+       
+
+
+
+
+        
+
+    </script>
+</div>
+

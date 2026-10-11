@@ -1,0 +1,167 @@
+﻿@using Hoor.Data.Models
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery antiforgery
+@inject UserManager<ApplicationUser> userManager
+
+@model Hoor.Web.ViewModels.Messages.UserConversationViewModel
+
+@{
+    var tokenSet = antiforgery.GetAndStoreTokens(this.Context);
+}
+
+<!-- حاوية لوحة التحكم -->
+<div class="dashboard-container">
+
+    <!-- محتوى لوحة التحكم
+    ================================================== -->
+    <div class="dashboard-content-container" data-simplebar>
+        <div class="dashboard-content-inner">
+
+            <div class="messages-container margin-top-0">
+
+                <div class="messages-container-inner">
+                    <!-- الرسائل -->
+                    <div class="messages-inbox">
+                        <vc:all-user-messages></vc:all-user-messages>
+                    </div>
+                    <!-- الرسائل / نهاية -->
+                    <!-- محتوى الرسائل -->
+                    <div class="message-content">
+
+                        <div class="messages-headline">
+                            <h4>@Model.User.FirstName @Model.User.LastName</h4>
+                        </div>
+
+                        <!-- محتوى الرسائل الداخلي -->
+                        <div id="message-field" class="message-content-inner">
+
+                            @foreach (var message in Model.Messages)
+                            {
+                                var isMyMessage = message.SenderId == this.userManager.GetUserId(this.User) ? "me" : string.Empty;
+
+                                @if (!message.IsDateReceivedToday)
+                                {
+                                    <!-- توقيت الرسالة -->
+                                    <div class="message-time-sign">
+                                        <span>@message.DateReceivedToString</span>
+                                    </div>
+                                }
+
+                                <div class="message-bubble @isMyMessage">
+                                    <div class="message-bubble-inner">
+                                        <div class="message-avatar"><img src="@message.SenderProfileImageUrl" alt="" /></div>
+                                        <div class="message-text"><p>@message.Content</p>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            }
+
+                        </div>
+                        <!-- محتوى الرسائل الداخلي / نهاية -->
+                        <!-- منطقة الرد -->
+                        <div class="message-reply">
+                            <textarea style="direction:rtl" id="messageInput" cols="1" rows="1" placeholder="رسالتك" data-autoresize></textarea>
+                            <button id="sendButton" class="button ripple-effect" onclick="sendMessage()">إرسال</button>
+                        </div>
+
+                    </div>
+                    <!-- محتوى الرسائل -->
+
+                </div>
+            </div>
+            <!-- حاوية الرسائل / نهاية -->
+           <partial name="SmallFooterPartial" />
+        </div>
+    </div>
+    <!-- محتوى لوحة التحكم / نهاية -->
+        <partial name="DashboardPartial" />
+
+</div>
+
+
+@section scripts {
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/MessageHub").build();
+
+        //Disable send button until connection is established
+        document.getElementById("sendButton").disabled = true;
+
+        connection.on("ReceiveMessage", function (message) {
+            var currentUserId = '@this.userManager.GetUserId(this.User)';
+
+            var bubble = message.senderId == currentUserId ? 'me' : '';
+
+            if (currentUserId == message.senderId || currentUserId == message.receiverId) {
+                document.getElementById("message-field").innerHTML +=
+                    `<div class="message-bubble ${bubble}">
+                        <div class="message-bubble-inner">
+                            <div class="message-avatar"><img src="${message.senderProfileImageUrl}" alt="" /></div>
+                                    <div id="messages2" class="message-text"><p>${message.content}</p></div>
+                        </div>
+                    <div class="clearfix"></div>
+                    </div>`;
+
+                document.getElementById('message-field').scrollTop = document.getElementById('message-field').scrollHeight;
+
+                document.querySelectorAll("div.messages-inbox ul > li").forEach(id => {
+                    if (message.senderId == currentUserId) {
+                        var li = document.getElementById(message.receiverId);
+                        li.querySelector('p').innerHTML = `You: ${message.content}`;
+
+                    } else {
+                        var li = document.getElementById(message.senderId);
+                        li.querySelector('p').innerHTML = message.content;
+                    }
+
+                    li.querySelector('span').innerHTML = 'just now';
+                });
+
+                MarkAllMessagesAsRead();
+            }
+        });
+
+        connection.start().then(function () {
+            MarkAllMessagesAsRead();
+
+            document.getElementById("sendButton").disabled = false;
+            document.getElementById('message-field').scrollTop = document.getElementById('message-field').scrollHeight;
+
+            console.log('THE CONNECTION HAS BEEN ESTABLISHED.');
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        document.getElementById("sendButton").addEventListener("click", function (event) {
+            var message = document.getElementById("messageInput").value;
+            var receiverId = '@Model.User.Id';
+
+            connection.invoke("SendMessageToUser", receiverId, message).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            document.getElementById("messageInput").value = '';
+            event.preventDefault();
+        });
+
+        function MarkAllMessagesAsRead() {
+            fetch('https://Hoor.azurewebsites.net/Messages/MarkAllMessagesAsRead', {
+                method: 'POST',
+                body: JSON.stringify('@(Model.User.Id)'),
+                headers: {
+                    'Content-Type': 'application/json',
+                    '@tokenSet.HeaderName': '@tokenSet.RequestToken'
+                },
+            })
+                .then(res => res.json())
+                .then(obj => {
+                    console.log('success');
+                    document.getElementById('messages-count').innerHTML = obj.count;
+                })
+                .catch(error => console.log(error));
+        }
+
+    </script>
+}
+

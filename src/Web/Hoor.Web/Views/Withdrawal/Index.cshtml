@@ -1,0 +1,115 @@
+﻿@model Hoor.Web.ViewModels.Withdrawal.WithdrawalViewModle
+@{
+    ViewData["Title"] = "طلب سحب";
+}
+<style>
+    .bg-primary {
+        background-color: #c1181e !important;
+        color: white !important;
+    }
+</style>
+<div class="container mt-5" style="direction: rtl;">
+    <!-- عنوان الصفحة -->
+    <div class="text-center mb-4">
+        <h2 class="font-weight-bold">طلب سحب الأرباح</h2>
+        <p class="text-muted">يرجى مراجعة التفاصيل أدناه وإدخال المعلومات المطلوبة</p>
+    </div>
+
+    <!-- تفاصيل السحب -->
+    <div class="card mx-auto" style="max-width: 500px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <div class="card-body text-center">
+            <!-- عرض الرصيد المتاح -->
+            <div class="alert alert-info text-center" role="alert">
+                <h4 class="mb-0">رصيدك الحالي: <strong>@Model.Balance.ToString() $</strong></h4>
+            </div>
+
+            <!-- نموذج السحب -->
+            <form asp-action="WithdrawalRequest" asp-controller="Withdrawal" class="needs-validation" novalidate>
+                <!-- حقل طرق الدفع -->
+                <div class="mb-3">
+                    <label for="paymentMethod" class="form-label">اختر طريقة الدفع</label>
+                    <select style="font-family: 'Cairo', Arial, sans-serif;" class="form-select font-weight-bold" id="paymentMethod" asp-for="@Model.WithdrawaInputl.PaymentMethod" name="PaymentMethod" required>
+                        <option value="" disabled selected>اختر طريقة الدفع...</option>
+                        @foreach (var method in Model.PaymentMethods)
+                        {
+                            if (method.PaymentType != "Card")
+                            {
+                                <option value="@method.Id">@method.Name</option>
+                            }
+                        }
+                    </select>
+                    <div class="invalid-feedback font-weight-bold">
+                        يرجى اختيار طريقة الدفع
+                    </div>
+                </div>
+
+                <!-- حقل رقم الحساب أو المحفظة -->
+                <div class="mb-3">
+                    <label for="accountNumber" class="form-label">رقم الحساب البنكي أو المحفظة الإلكترونية</label>
+                    <input type="text" class="form-control font-weight-bold" id="accountNumber" asp-for="@Model.WithdrawaInputl.Account" name="Account" placeholder="أدخل رقم الحساب أو المحفظة" required>
+                    <div class="invalid-feedback font-weight-bold">
+                        يرجى إدخال رقم الحساب أو المحفظة.
+                    </div>
+                </div>
+
+                <!-- حقل اسم صاحب الحساب -->
+                <div class="mb-3">
+                    <label for="accountName" class="form-label">اسم صاحب الحساب</label>
+                    <input type="text" class="form-control font-weight-bold" id="accountName" asp-for="@Model.WithdrawaInputl.AccountName" name="AccountName" placeholder="ادخل اسم صاحب الحساب" required>
+                    <div class="invalid-feedback font-weight-bold">
+                        يرجى إدخال اسم صاحب الحساب.
+                    </div>
+                </div>
+
+                <!-- حقل المبلغ المراد سحبه -->
+                <div class="mb-3">
+                    <label for="amount" class="form-label">المبلغ المراد سحبه</label>
+                    <input type="number" class="form-control font-weight-bold" id="amount" asp-for="@Model.WithdrawaInputl.Amount" name="Amount" placeholder="أدخل المبلغ" required min="20" max="@Model.Balance">
+                    <div class="invalid-feedback font-weight-bold">
+                        يرجى إدخال مبلغ صالح (لا يزيد عن رصيدك الحالي).
+                    </div>
+                </div>
+
+                <!-- زر الإرسال -->
+                <button type="submit" class="btn bg-success text-white font-weight-bold w-100">إرسال الطلب</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript لتفعيل التحقق من صحة النموذج -->
+@section Scripts {
+    <script>
+        // تفعيل التحقق من صحة النموذج باستخدام Bootstrap
+        (function () {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    // التحقق من صحة النموذج
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+
+                    // التحقق من أن المبلغ المدخل لا يتجاوز الرصيد
+                    var amountInput = document.getElementById('amount');
+                    var balance = @Model.Balance; // الرصيد الحالي من النموذج
+                    if (parseFloat(amountInput.value) > balance) {
+                        document.getElementById('PaymentErrorKey').click();
+                        event.preventDefault(); // منع إرسال النموذج
+                        return;
+                    } else {
+                        if (parseFloat(amountInput.value) == 0 || parseFloat(amountInput.value) == null) {
+                            alert('المبلغ المدخل يجب ان يكون اكبر من صفر!');
+                            event.preventDefault(); // منع إرسال النموذج
+                            return;
+                        }
+                    }
+
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+}

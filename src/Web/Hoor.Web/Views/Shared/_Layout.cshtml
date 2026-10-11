@@ -1,0 +1,438 @@
+﻿@using Hoor.Common
+@using Hoor.Data.Models
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> signInManager
+@inject UserManager<ApplicationUser> userManager
+
+@{
+    var user = await this.userManager.GetUserAsync(this.User);
+}
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>@this.ViewData["Title"] - @GlobalConstants.SystemName</title>
+
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=payments" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" src="~/tags/bootstrap-tagsinput.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.10/clipboard.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/colors/blue.css">
+    @RenderSection("css", required: false)
+    <style>
+        .input-text {
+            direction: rtl;
+        }
+
+        h1, h2, h3, p {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        @@media (max-width: 1099px) {
+            .header-widget {
+                padding: 0 9px !important;
+            }
+
+            .mmenu-trigger {
+                margin: 0 -5px 0 11px !important;
+
+            }
+
+            #header .right-side .header-widget {
+                /* border-right: 1px solid #e0e0e0; */
+                margin-right: -5px !important;
+            }
+        }
+    </style>
+
+</head>
+<body style=" font-family: 'Cairo', Arial, sans-serif;">
+    <div id="wrapper">
+        <header id="header-container" class="fullwidth">
+            <!-- Header -->
+            <div id="header">
+                <div class="container">
+                    @if (this.signInManager.IsSignedIn(User))
+                    {
+
+
+                        <!-- المحتوى الأيسر -->
+                        <div class="left-side">
+
+                            <!-- الشعار -->
+                            <!-- التنقل الرئيسي -->
+                            <nav id="navigation">
+                                <ul id="responsive">
+
+                                    @if (this.User.IsInRole("Freelancer"))
+
+                                    {
+                                        <li>
+                                            <a href="#">البحث عن عمل</a>
+                                            <ul class="dropdown-nav text-center">
+                                                <li>
+                                                    <a asp-controller="Jobs" asp-action="All">تصفح الوظائف</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                        <li>
+                                            <a role="button">العروض</a>
+                                            <ul class="dropdown-nav text-center">
+                                                <li>
+                                                    <a asp-action="MyOffers" asp-controller="Offers">عروضي</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                        <li>
+                                            <a role="button">العقود</a>
+                                            <ul class="dropdown-nav text-center">
+                                                <li>
+                                                    <a asp-action="MyContracts" asp-controller="Contracts">عقودي</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                        <li>
+                                            <a href="#">الملف الشخصي</a>
+                                            <ul class="dropdown-nav text-center">
+                                                <li>
+                                                    <a asp-action="Freelancer" asp-controller="Users" asp-route-id="@user.Id">ملفي الشخصي</a>
+                                                </li>
+                                                <li>
+                                                    <a asp-action="Settings" asp-controller="Users">الإعدادات</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <a role="button">AI التحدث مع</a>
+                                            <ul class="dropdown-nav text-center">
+
+                                                <li>
+                                                    <a asp-action="Chats" asp-controller="Users">مراسلة</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (this.User.IsInRole("Employer"))
+
+                                    {
+                                        <li>
+                                            <a role="button">البحث عن مواهب</a>
+                                            <ul class="dropdown-nav text-center">
+                                                <li>
+                                                    <a asp-action="AllFreelancers" asp-controller="Users">تصفح المتخصصين</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                        <li>
+                                            <a role="button">الوظائف</a>
+                                            <ul class="dropdown-nav text-center">
+                                                <li>
+                                                    <a asp-action="MyJobs" asp-controller="Jobs">وظائفي</a>
+                                                </li>
+
+                                                <li class="text-center">
+                                                    <a asp-action="AddJob" asp-controller="Jobs">إضافة وظيفة</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                        <li>
+                                            <a role="button">العقود</a>
+                                            <ul class="dropdown-nav text-center">
+                                                <li>
+                                                    <a asp-action="MyContracts" asp-controller="Contracts">عقودي</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                        <li>
+                                            <a role="button">الملف الشخصي</a>
+                                            <ul class="dropdown-nav text-center">
+                                                <li>
+                                                    <a asp-action="Employer" asp-controller="Users" asp-route-id="@user.Id">ملفي الشخصي</a>
+                                                </li>
+                                                <li>
+                                                    <a asp-action="Settings" asp-controller="Users">الإعدادات</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                        <li>
+                                            <a role="button">AI التحدث مع</a>
+                                            <ul class="dropdown-nav text-center">
+
+                                                <li>
+                                                    <a asp-action="chats" asp-controller="Users">مراسلة</a>
+
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+
+                            <div class="clearfix"></div>
+                            <!-- التنقل الرئيسي / النهاية -->
+                        </div>
+
+
+                        <div class="right-side">
+
+                            @{
+                                var firstName = user.FirstName;
+                                var lastName = user.LastName;
+                                var username = user.UserName;
+                                var role = User.IsInRole("Freelancer") ? "Freelancer" :
+                                User.IsInRole("Employer") ? "Employer" :
+                                "Administrator";
+
+                                var onlineStatus = user.IsOnline ? "status-online" : "status-invisible";
+                            }
+
+                            <div class="header-widget">
+                                <vc:all-user-notifications></vc:all-user-notifications>
+                                <vc:all-user-layout-messages></vc:all-user-layout-messages>
+                            </div>
+
+                            <!-- قائمة المستخدم -->
+                            <div class="header-widget" style="float:left">
+                                <div id="logo" style="padding-right:0px;">
+                                    <a asp-action="Index" asp-controller="Home"><img src="~/images/logo1.png" alt=""></a>
+                                </div>
+                                <!-- الرسائل -->
+                                <div class="header-notifications user-menu">
+                                    <div class="header-notifications-trigger">
+                                        <a href="#">
+                                            <div id="user-online-status" class="user-avatar @onlineStatus"><img src="@user.ProfileImageUrl" alt=""></div>
+                                        </a>
+                                    </div>
+
+                                    <!-- القائمة المنسدلة -->
+                                    <div class="header-notifications-dropdown">
+
+                                        <!-- حالة المستخدم -->
+                                        <div class="user-status">
+
+                                            <!-- اسم المستخدم / الصورة الشخصية -->
+                                            <div class="user-details ">
+                                                <div id="dropdown-user-online-status" class="user-avatar @onlineStatus"><img src="@user.ProfileImageUrl" alt=""></div>
+                                                <div class="user-name">
+                                                    @firstName @lastName
+                                                    <span>@role</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <ul class="user-menu-small-nav">
+                                            <li><a asp-action="Index" asp-controller="Dashboard"><i class="icon-material-outline-dashboard"></i> لوحة التحكم</a></li>
+                                            <li><a asp-action="Settings" asp-controller="Users"><i class="icon-material-outline-settings"></i> الإعدادات</a></li>
+
+                                            <li>
+                                                <form id="logout" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" method="post">
+                                                    <a role="button" href="javascript:void(0)" aria-label="logout" onclick="document.getElementById('logout').submit()"><i class="icon-material-outline-power-settings-new"></i>تسجيل الخروج</a>
+                                                </form>
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- زر التنقل المحمول -->
+                            <span class="mmenu-trigger">
+                                <button class="hamburger hamburger--collapse" type="button">
+                                    <span class="hamburger-box">
+                                        <span class="hamburger-inner"></span>
+                                    </span>
+                                </button>
+                            </span>
+                        </div>
+                        <!-- المحتوى الأيمن / النهاية -->
+                        <!-- المحتوى الأيسر / النهاية -->
+                        <!-- المحتوى الأيمن / النهاية -->
+                    }
+                    else
+                    {
+                        <div class="right-side">
+                            <!-- الشعار -->
+                            <div id="logo">
+                                <a asp-action="Index" asp-controller="Home"><img src="~/images/logo1.png" alt=""></a>
+                            </div>
+                        </div>
+                        <div class="left-side">
+                            <!-- التنقل الرئيسي -->
+                            <nav id="navigation">
+                                <ul id="responsive">
+                                    <li>
+
+                                        <a href="/chat">الاستفسارات</a>
+                                    </li>
+                                    <li>
+                                        <a href="/Login">تسجيل الدخول</a>
+                                    </li>
+                                    <li>
+                                        <a href="/Register">التسجيل</a>
+                                    </li>
+                                    <li>
+                                        <a href="/Home">الرئيسية</a>
+                                    </li>
+                                </ul>
+                            </nav>
+
+
+                            <span class="mmenu-trigger">
+                                <button class="hamburger hamburger--collapse" type="button">
+                                    <span class="hamburger-box">
+                                        <span class="hamburger-inner"></span>
+                                    </span>
+                                </button>
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+            <!-- رأس الصفحة / النهاية -->
+        </header>
+        <div class="clearfix"></div>
+
+        <partial name="_CookieConsentPartial" />
+        @this.RenderBody()
+
+
+    </div>
+
+    <!-- Scripts
+    ================================================== -->
+    <script src="~/js/jquery-migrate-3.3.2.min.js"></script>
+    <script src="https://unpkg.com/@@popperjs/core@2/dist/umd/popper.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/mmenu.min.js"></script>
+    <script src="~/js/tippy.all.min.js"></script>
+    <script src="~/js/simplebar.min.js"></script>
+    <script src="~/js/bootstrap-slider.min.js"></script>
+    <script src="~/js/bootstrap-select.min.js"></script>
+    <script src="~/js/snackbar.js"></script>
+    <script src="~/js/clipboard.min.js"></script>
+    <script src="~/js/counterup.min.js"></script>
+    <script src="~/js/magnific-popup.min.js"></script>
+    <script src="~/js/slick.min.js"></script>
+    <script src="~/js/custom.js"></script>
+    <script src="~/lib/lodash/lodash.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.15/signalr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"></script>
+
+    <script>
+        $(document).on('ready', function () {
+          // initialization of select picker
+          $.HSCore.components.HSSelectPicker.init('.js-select');
+        });
+    </script>
+
+    @if (this.signInManager.IsSignedIn(this.User))
+    {
+        <script>
+            var connection = new signalR.HubConnectionBuilder().withUrl("/OnlineHub").build();
+
+            connection.start().then(function () {
+                document.getElementById('user-online-status').setAttribute('class', "user-avatar status-online");
+                document.getElementById('dropdown-user-online-status').setAttribute('class', "user-avatar status-online");
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+        </script>
+    }
+
+
+    <!-- Snackbar // documentation: https://www.polonel.com/snackbar/ -->
+    <script>
+        // Snackbar for user status switcher
+        $('#snackbar-user-status label').click(function () {
+            Snackbar.show({
+                text: 'Your status has been changed!',
+                pos: 'bottom-center',
+                showAction: false,
+                actionText: "Dismiss",
+                duration: 3000,
+                textColor: '#fff',
+                backgroundColor: '#383838'
+            });
+        });
+    </script>
+
+
+    <!-- Google Autocomplete -->
+    <script>
+        function initAutocomplete() {
+            var options = {
+                types: ['(cities)'],
+                // componentRestrictions: {country: "us"}
+            };
+
+            var input = document.getElementById('autocomplete-input');
+            var autocomplete = new google.maps.places.Autocomplete(input, options);
+        }
+
+        // Autocomplete adjustment for homepage
+        if ($('.intro-banner-search-form')[0]) {
+            setTimeout(function () {
+                $(".pac-container").prependTo(".intro-search-field.with-autocomplete");
+            }, 300);
+        }
+
+                document.addEventListener('DOMContentLoaded', function () {
+            var clipboard = new ClipboardJS('.js-clipboard', {
+                text: function (trigger) {
+                    var targetSelector = trigger.getAttribute('data-content-target');
+                    return document.querySelector(targetSelector).value;
+                }
+            });
+
+            clipboard.on('success', function (e) {
+                var icon = e.trigger.querySelector('span');
+                if (icon) {
+                    icon.className = 'fas fa-check'; // تغيير الأيقونة عند النجاح
+                    setTimeout(() => {
+                        icon.className = 'fas fa-clone'; // إعادة الأيقونة الأصلية بعد فترة
+                    }, 2000);
+                }
+            });
+
+            clipboard.on('error', function (e) {
+                alert('فشل النسخ! يرجى المحاولة مرة أخرى.');
+            });
+        });
+
+
+    </script>
+
+    <!-- Google API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places&callback=initAutocomplete"></script>
+
+
+
+    @await this.RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

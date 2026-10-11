@@ -1,0 +1,188 @@
+﻿@using Hoor.Web.ViewModels.Jobs
+
+@model JobInputModel
+
+@{
+    ViewData["Title"] = "إضافة وظيفة";
+
+    var categories = Model.Categories.Select(category => new SelectListItem
+    {
+        Text = category.Name,
+        Value = category.Id
+    });
+}
+
+<!-- حاوية لوحة القيادة -->
+<div class="dashboard-container">
+
+
+    <!-- محتوى لوحة القيادة
+    ================================================== -->
+    <div class="dashboard-content-container" data-simplebar style="direction:rtl; text-align:right">
+        <div class="dashboard-content-inner">
+
+            <!-- عنوان لوحة القيادة -->
+            <div class="dashboard-headline">
+                <h3>إضافة وظيفة</h3>
+            </div>
+
+            <!-- صف -->
+            <div class="row">
+
+                <!-- صندوق لوحة القيادة -->
+                <div class="col-xl-12">
+                    <div class="dashboard-box margin-top-0">
+
+                        <form method="post" asp-action="AddJob" asp-controller="Jobs" enctype="multipart/form-data">
+                            <!-- العنوان -->
+                            <div class="headline">
+                                <h3><i class="icon-feather-folder-plus"></i> نموذج تقديم الوظيفة</h3>
+                            </div>
+
+                            <div class="content with-padding padding-bottom-10">
+                                <div class="row">
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>عنوان الوظيفة</h5>
+                                            <input asp-for="Title" type="text" class="with-border">
+                                            <span asp-validation-for="Title" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>فئة الوظيفة</h5>
+                                            <select asp-for="CategoryId" class="location-select dropdown with-border" asp-items="categories" data-size="7" title="اختر فئة">
+                                            </select>
+                                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4">
+                                        <div class="submit-field">
+                                            <h5>الميزانية</h5>
+                                            <div class="input-with-icon">
+                                                <input asp-for="Budget" min="10" class="currency with-border" type="number" placeholder="الميزانية">
+                                                <i class="currency">USD</i>
+                                            </div>
+                                            <span asp-validation-for="Budget" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-12">
+                                        <div class="submit-field">
+                                            <h5>وصف الوظيفة</h5>
+                                            <textarea asp-for="Description" cols="30" rows="5" class="with-border"></textarea>
+                                            <span asp-validation-for="Description" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="width: 100%;">
+                                        <div class="col-xl-6">
+                                                <!-- زر إضافة وظيفة -->
+                                                <button asp-route="/Dashboard/Jobs/Add" type="submit" class="button ripple-effect big margin-top-30">
+                                                    <i class="icon-feather-plus"></i> إضافة الوضيفة 
+                                                </button>
+
+                                                <!-- زر إضافة مرفق -->
+                                               @*  <button asp-route="/Dashboard/Jobs/Add" type="submit" class="button ripple-effect bg-info big margin-top-30">
+                                                    <i class="icon-feather-plus"></i> إضافة مرفق
+                                                </button> *@
+                                        </div>
+                                            <div class="col-xl-6">
+                                                <div class="uploadButton margin-top-0">
+                                                    <input asp-for="Attachment" type="file" class="uploadButton-input"  accept="image/*,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/zip" id="upload" />
+                                                    <label class="uploadButton-button ripple-effect" for="upload">إرفاق ملف</label>
+                                                    <span class="uploadButton-file-name">يمكنك فقط رفع الملفات بصيغ jpeg, pdf, docx, xlsx, pptx, و zip.</span>
+                                                </div>
+
+                                            </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- صف / النهاية -->
+            <partial name="SmallFooterPartial" />
+
+        </div>
+    </div>
+    <!-- محتوى لوحة القيادة / النهاية -->
+        <partial name="DashboardPartial" />
+
+</div>
+<!-- حاوية لوحة القيادة / النهاية -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // تحديد عناصر الإدخال
+        const fileInput = document.getElementById("upload");
+
+        // الحد الأقصى للحجم بالبايت (20 ميجا = 20 * 1024 * 1024)
+        const maxSize = 20 * 1024 * 1024;
+
+        // التحقق من الملف عند تغييره
+        fileInput.addEventListener("change", function () {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+
+                if (file.size > maxSize) {
+                    alert("⚠️ الحد الأقصى لحجم الملف هو 20MB. الرجاء اختيار ملف أصغر.");
+                    fileInput.value = ""; // إفراغ الحقل لإلغاء اختيار الملف
+                }
+            }
+        });
+    });
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        // تحديد العناصر
+        const titleInput = document.querySelector('input[name="Title"]');
+        const descriptionTextarea = document.querySelector('textarea[name="Description"]'); // حقل وصف الوظيفة
+        const categorySelect = document.querySelector('select[name="CategoryId"]');
+
+        // وظيفة مشتركة لطلب الوصف
+        async function fetchJobDescription() {
+            // التحقق إذا لم يكن الحقل فارغًا
+            if (titleInput.value.trim() && categorySelect.value.trim()) {
+                // الحصول على النص الخاص بفئة الوظيفة
+                const categoryText = categorySelect.selectedOptions[0]?.text;
+
+                try {
+                    // إرسال طلب إلى الخادم
+                    const response = await fetch('https://cozy-perception-production.up.railway.app/generate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            prompt: 'اريد اقتراح لوصف لا يزيد عن 4 اسطر عن الوظيفه بحسب العنوان والفئة الاتيه: اسم الوظيفه ' + titleInput.value + ' فئة الوظيفه ' + categoryText
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    descriptionTextarea.value = data.text || 'لا يوجد رد';
+                } catch (error) {
+                    console.error("Error fetching job description:", error);
+                }
+            }
+        }
+
+        // إضافة حدث blur إلى حقل اسم الوظيفة
+        titleInput.addEventListener("blur", fetchJobDescription);
+
+        // إضافة حدث change إلى قائمة الفئات
+        categorySelect.addEventListener("change", fetchJobDescription);
+    });
+
+
+</script>

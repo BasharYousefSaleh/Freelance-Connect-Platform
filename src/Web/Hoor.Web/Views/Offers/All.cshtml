@@ -1,0 +1,106 @@
+﻿@using Hoor.Web.ViewModels.Offers
+@model IEnumerable<JobOfferViewModel>
+
+
+@{
+    ViewData["Title"] = "إدارة العروض";
+    var dialogNumber = 1;
+}
+
+<div>
+    <div class="dashboard-container">
+
+        <!-- محتوى لوحة التحكم
+        ================================================== -->
+        <div class="dashboard-content-container" data-simplebar>
+            <div class="dashboard-content-inner">
+
+                <!-- الصف -->
+                <div class="row" >
+
+                    <!-- صندوق لوحة التحكم -->
+                    <div class="col-xl-12">
+                        <div class="dashboard-box margin-top-0">
+
+                            <!-- العنوان -->
+                            <div class="headline text-right">
+                                <h3>@Model.Count() عروض <i class="icon-material-outline-supervisor-account"></i></h3>
+                            </div>
+
+                            <div class="content">
+                                <ul class="dashboard-box-list">
+                                    @foreach (var offer in Model)
+                                    {
+                                        <li>
+                                            <!-- نظرة عامة -->
+                                            <div class="freelancer-overview manage-candidates">
+                                                <div class="freelancer-overview-inner">
+
+                                                    <!-- الصورة الرمزية -->
+                                                    <div class="freelancer-avatar">
+                                                        <a asp-action="Freelancer" asp-controller="Users" asp-route-id="@offer.FreelancerId"><img src="@offer.FreelancerProfileImageUrl" alt=""></a>
+                                                    </div>
+
+                                                    <!-- الاسم -->
+                                                    <div class="freelancer-name">
+                                                        <h4><a asp-action="Freelancer" asp-controller="Users" asp-route-id="@offer.FreelancerId">@offer.FreelancerFirstName @offer.FreelancerLastName <img class="flag" src="~/images/flags/@(offer.FreelancerLocation).svg" alt="@offer.FreelancerLocation" title="@offer.FreelancerLocationToString" data-tippy-placement="top"></a></h4>
+
+                                                        <!-- التفاصيل -->
+                                                        <span class="freelancer-detail-item"><i class="icon-feather-mail"></i> @offer.FreelancerEmail</span>
+
+                                                        <!-- التقييم -->
+                                                        <div class="freelancer-rating">
+                                                            @if (offer.FreelancerRating == 0)
+                                                            {
+                                                                <div class="company-not-rated" data-rating="@offer.FreelancerRating">غير مصنف</div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="star-rating" data-rating="@offer.FreelancerRating"></div>
+                                                            }
+                                                        </div>
+
+                                                        <!-- تفاصيل العرض -->
+                                                        <ul class="dashboard-task-info bid-info">
+                                                            <li><strong>$@offer.FixedPrice</strong><span>سعر ثابت</span></li>
+                                                            <li><strong>@offer.DeliveryDays Days</strong><span>مدة التسليم</span></li>
+                                                        </ul>
+
+                                                        <!-- الأزرار -->
+                                                        <div class="buttons-to-right d-flex always-visible margin-top-25 margin-bottom-0">
+                                                            <a href="#@(dialogNumber++)" class="popup-with-zoom-anim button ripple-effect margin-right-5"><i class="icon-material-outline-check"></i> قبول العرض</a>
+                                                            <form method="post" id="delete-offer-form" asp-action="DeleteOffer" asp-controller="Offers">
+                                                                <input type="hidden" name="offerId" value="@offer.Id" />
+                                                                <button type="submit" form="delete-offer-form" class="button red ripple-effect ico" title="حذف العرض" data-tippy-placement="top"><i class="icon-feather-trash-2"></i></button>
+                                                            </form>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <partial name="~/Views/Shared/AcceptOfferPartial.cshtml"
+                                                 model="@new JobOfferViewModel
+                                                {
+                                                    DialogNumber = dialogNumber,
+                                                    Id = offer.Id,
+                                                    JobId = offer.JobId,
+                                                    FixedPrice = offer.FixedPrice,
+                                                    FreelancerFirstName = offer.FreelancerFirstName,
+                                                    FreelancerLastName = offer.FreelancerLastName,
+                                                }" />
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- الصف / نهاية -->
+                <div class="dashboard-footer-spacer" style="padding-top: 162px;"></div>
+            </div>
+        </div>
+        <!-- محتوى لوحة التحكم / نهاية -->
+                <partial name="DashboardPartial" />
+
+    </div>
+</div>

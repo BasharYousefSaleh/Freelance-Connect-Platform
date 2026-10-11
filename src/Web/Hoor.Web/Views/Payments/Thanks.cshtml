@@ -1,0 +1,19 @@
+﻿@model Hoor.Web.ViewModels.Contracts.Thanks
+
+@{
+
+}
+
+<div class="text-center">
+    <h1 class="display-4">@Model.HeadTitle</h1>
+    <h3>@Model.Title</h3>
+    <p></p>
+    <p>سيتم نقلك مباشرةً انتظر لحضات...</p>
+</div>
+
+<script>
+    // إعادة التوجيه بعد 5 ثوانٍ
+    setTimeout(function () {
+        window.location.href = "/";
+    }, 5000); // 5000 ميلي ثانية = 5 ثوانٍ
+</script>

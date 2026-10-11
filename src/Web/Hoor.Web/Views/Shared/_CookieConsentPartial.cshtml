@@ -1,0 +1,27 @@
+@using Microsoft.AspNetCore.Http.Features
+
+@{
+    var consentFeature = this.Context.Features.Get<ITrackingConsentFeature>();
+    var showBanner = !consentFeature?.CanTrack ?? false;
+    var cookieString = consentFeature?.CreateConsentCookie();
+}
+
+@if (showBanner)
+{
+    <div class="header-details">
+        <div id="cookieConsent" class="notification notice alert alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
+            ‰” Œœ„ «·ﬂÊﬂÌ“ ·›Â„ ﬂÌ›Ì… «” Œœ«„ﬂ ·„Êﬁ⁄‰« Ê· Õ”Ì‰  Ã—» ﬂ.
+            <button type="button" class="button ripple-effect " data-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">
+                <span aria-hidden="true">ﬁ»Ê·</span>
+            </button>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var button = document.querySelector("#cookieConsent button[data-cookie-string]");
+            button.addEventListener("click", function () {
+                document.cookie = button.dataset.cookieString;
+            }, false);
+        })();
+    </script>
+}

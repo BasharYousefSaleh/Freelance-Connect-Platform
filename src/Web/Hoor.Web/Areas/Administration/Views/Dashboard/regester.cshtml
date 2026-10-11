@@ -1,0 +1,44 @@
+﻿@page "/Regester"
+@using Hoor.Web.ViewModels.Administration.Dashboard
+@model regestre
+
+<main style="background:#f1f5f9">
+    <div class="main-content">
+        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+            <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
+                <h6 class="text-white text-capitalize ps-3" style="text-align:center"> جميع المستقلين </h6>
+            </div>
+        </div>
+
+        <div class="container mt-4">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>الاسم</th>
+                        <th>رقم الهاتف</th>
+                        <th>العمر</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model?.Freelancers1 != null && Model.Freelancers1.Any())
+                    {
+                        foreach (var freelancer in Model.Freelancers1)
+                        {
+                            <tr>
+                                <td>@freelancer.Name</td>
+                                <td>@freelancer.Phone</td>
+                                <td>@freelancer.Age</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center">لا توجد بيانات</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>

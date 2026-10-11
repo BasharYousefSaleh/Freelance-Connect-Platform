@@ -1,0 +1,205 @@
+﻿@using Hoor.Web.ViewModels.Jobs
+@using Microsoft.AspNetCore.Identity
+@using Hoor.Data.Models
+@using Hoor.Common
+@using System.IO
+@inject UserManager<ApplicationUser> userManager
+
+@model SingleJobViewModel
+
+@{
+    var user = await userManager.GetUserAsync(User);
+}
+
+@{
+    ViewData["jobId"] = Model.Id;
+    ViewData["Title"] = Model.Title;
+}
+
+<!-- شريط العنوان
+================================================== -->
+<style>
+
+    .job-overview .job-overview-inner ul li i{
+    left : unset;
+        margin-left: 5px;
+    }
+</style>
+<div class="single-page-header freelancer-header " data-background-image="/images/single-job.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="single-page-header-inner d-flex flex-row">
+                    <!-- استخدام Flexbox لعكس الاتجاه -->
+                    <div class="right-side ms-4">
+                        <!-- إضافة مسافة على اليسار لضمان التباعد -->
+                        <div class="salary-box text-right" style="margin:unset ">
+                            <div class="salary-type">الميزانية</div>
+                            <div class="salary-amount">$@Model.Budget.ToString("N2")</div>
+                        </div>
+                    </div>
+                    <div class="left-side">
+                        <div class="header-details text-right">
+                            <h3>عنوان الوضيفة : @Model.Title</h3>
+                            <h5>حول صاحب العمل</h5>
+                            <ul>
+                                <li>
+                                    <a asp-action="Employer" asp-controller="Users" asp-route-id="@Model.EmployerId">
+                                        @Model.EmployerFirstName @Model.EmployerLastName
+                                        <i class="icon-material-outline-business"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    @if (Model.EmployerRating > 0.0)
+                                    {
+                                        <div class="star-rating" data-rating="@Model.EmployerRating"></div>
+                                    }
+                                    else
+                                    {
+                                        <span class="company-not-rated">لم يتم تقييمه بعد</span>
+                                    }
+                                </li>
+                                <li>
+                                    @Model.EmployerLocationToString
+                                    <img class="flag" src="/images/flags/@(Model.EmployerLocation.ToString().ToLower()).svg" alt="">
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="header-image freelancer-avatar">
+                            <a asp-action="Employer" asp-controller="Users" asp-route-id="@Model.EmployerId">
+                                <img src="@Model.EmployerProfileImageUrl" alt="">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- محتوى الصفحة
+================================================== -->
+<div class="container">
+    <div class="row">
+
+        <!-- المحتوى -->
+        <div class="col-xl-8 col-lg-8 content-right-offset text-right ">
+            <div class="single-page-section">
+                <h3 class="margin-bottom-25">وصف الوظيفة</h3>
+                <p>@Model.Description</p>
+            </div>
+
+            <div class="single-page-section">
+                <h3>المرفقات</h3>
+                @if(Model.AttachmentExt==null){
+
+                <h5 class="margin-bottom-30 text-secondary font-italic">لا يوجد اي مرفقات.</h5>
+                
+                }
+                else
+                {
+                    
+                <h5 class="margin-bottom-30 text-secondary font-italic">قم بتنزيل المرفق عن طريق النقر بزر الماوس الأيمن على الملف.</h5>
+               
+                }
+                
+                <div class="attachments-container">
+                    @{
+
+                        if (Model.AttachmentExt != null)
+                        {
+                        <a href="@Model.AttachmentUrl" download="" target="_blank" class="attachment-box ripple-effect"><span>@Model.AttachmentName. </span><i>@Model.AttachmentExt</i></a>
+                            
+                        }
+                    }
+                    
+                </div>
+            </div>
+            
+        </div>
+
+
+        <!-- الشريط الجانبي -->
+        <div class="col-xl-4 col-lg-4 text-right">
+            <div class="sidebar-container">
+
+
+
+                @if (this.User.IsInRole("Freelancer"))
+                {
+                    if (Model.Status == JobStatus.InContract && Model.ContractsFreelancerIds.Contains(user.Id))
+                    {
+                        <a asp-action="Index" asp-controller="Contracts" asp-route-id="@Model.ContractId" class="apply-now-button">عقد<i class="icon-material-outline-arrow-right-alt"></i></a>
+                    }
+                    else if (Model.Status == JobStatus.Open && !Model.OffersFreelancerIds.Contains(user.Id))
+                    {
+                        <a href="#small-dialog" class="apply-now-button popup-with-zoom-anim">تقديم عرض<i class="icon-material-outline-arrow-right-alt"></i></a>
+                    }
+                    else if (Model.Status == JobStatus.Open && Model.OffersFreelancerIds.Contains(user.Id))
+                    {
+                        <a role="button" class="apply-now-button bg-secondary text-white">العرض قُدم بالفعل</a>
+                    }
+                    else
+                    {
+                        <a role="button" class="apply-now-button bg-secondary text-white">الوظيفة مغلقة</a>
+                    }
+                }
+
+                @if (this.User.IsInRole("Employer"))
+                {
+                    if (Model.Status == JobStatus.InContract && Model.EmployerId == user.Id)
+                    {
+                        <a asp-action="Index" asp-controller="Contracts" asp-route-id="@Model.ContractId" class="apply-now-button">عقد<i class="icon-material-outline-arrow-right-alt"></i></a>
+                    }
+                    else if (Model.Status != JobStatus.InContract && Model.EmployerId == user.Id)
+                    {
+                        <a asp-action="MyJobs" asp-controller="Jobs" class="apply-now-button">وظائفي<i class="icon-material-outline-arrow-right-alt"></i></a>
+                    }
+                    else
+                    {
+                        <a role="button" class="apply-now-button bg-secondary text-white">لا يمكن لأصحاب العمل التقديم على الوظائف</a>
+                    }
+                }
+
+                <!-- أداة الشريط الجانبي -->
+                <div class="sidebar-widget">
+                    
+                    <div class="job-overview">
+                        <div class="job-overview-headline">ملخص الوظيفة</div>
+                        <div class="job-overview-inner">
+                            <ul>
+                                <li>
+                                    <i class="icon-material-outline-location-on"></i>
+                                    <span>موقع صاحب العمل</span>
+                                    <h5>@Model.EmployerLocationToString</h5>
+                                </li>
+                                <li>
+                                    <i class="icon-material-outline-business-center"></i>
+                                    <span>الفئة</span>
+                                    <h5>@Model.CategoryName</h5>
+                                </li>
+                                <li>
+                                    <i class="icon-material-outline-local-atm"></i>
+                                    <span>الميزانية</span>
+                                    <h5>$@Model.Budget.ToString("N2")</h5>
+                                </li>
+                                <li>
+                                    <i class="icon-material-outline-access-time"></i>
+                                    <span>تاريخ النشر</span>
+                                    <h5>@Model.DateFormatted</h5>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="padding-bottom-100"></div>
+
+<partial name="BigFooterPartial" />
+
+<partial name="~/Views/Shared/ApplyFormPartial.cshtml" view-data="ViewData" />

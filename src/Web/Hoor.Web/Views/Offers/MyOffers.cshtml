@@ -1,0 +1,81 @@
+﻿@model IEnumerable<Hoor.Web.ViewModels.Offers.UserOffersViewModel>
+
+@{
+    ViewData["Title"] = "عروضي";
+
+    var offersCount = (int)ViewData["OffersCount"];
+}
+<!-- حاوية لوحة التحكم -->
+<div class="dashboard-container">
+    <!-- محتوى لوحة التحكم
+        ================================================== -->
+    <div class="dashboard-content-container" data-simplebar>
+        <div class="dashboard-content-inner">
+
+            <!-- عنوان لوحة التحكم -->
+            <div class="dashboard-headline">
+                <h3 style="direction:rtl; text-align:right ">عروضي</h3>
+            </div>
+
+            <!-- صف -->
+            <div class="row"  >
+
+                <!-- صندوق لوحة التحكم -->
+                <div class="col-xl-12">
+                    <div class="dashboard-box margin-top-0">
+
+                        <!-- العنوان -->
+                        <div class="headline">
+                            <h3 style="direction:rtl; text-align:right "><i class="icon-material-outline-gavel"></i> @offersCount عروض نشطة</h3>
+                        </div>
+
+                        <div class="content" >
+                            <ul class="dashboard-box-list">
+                                @foreach (var offer in Model)
+                                {
+                                    <li>
+                                        <!-- قائمة الوظائف -->
+
+                                        <div class="job-listing width-adjustment">
+
+                                            <!-- تفاصيل قائمة الوظائف -->
+                                            <div class="job-listing-details">
+
+                                                <!-- التفاصيل -->
+                                                <div class="job-listing-description">
+                                                    <h3 style=" text-align:right " class="job-listing-title">
+                                                        <a asp-action="Index" asp-controller="Jobs" asp-route-id="@offer.JobId">@offer.JobTitle</a>
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- تفاصيل المهمة -->
+                                        <ul class="dashboard-task-info">
+                                            <li><strong>$@offer.FixedPrice</strong><span>سعر ثابت</span></li>
+                                            <li><strong>@offer.DeliveryDays Days</strong><span>مدة التسليم</span></li>
+                                        </ul>
+
+                                        <!-- الأزرار -->
+                                        <div class="buttons-to-right always-visible">
+                                            <form method="post" id="delete-offer-form" asp-action="DeleteOffer" asp-controller="Offers">
+                                                <input type="hidden" name="offerId" value="@offer.Id" />
+                                                <button type="submit" form="delete-offer-form" class="button red ripple-effect ico" title="حذف العرض" data-tippy-placement="top"><i class="icon-feather-trash-2"></i></button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- صف / نهاية -->
+            <partial name="SmallFooterPartial" />
+        </div>
+    </div>
+    <!-- محتوى لوحة التحكم / نهاية -->
+        <partial name="DashboardPartial" />
+
+</div>

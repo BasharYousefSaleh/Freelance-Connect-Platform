@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "جميع الرسائل";
+}
+<!-- حاوية لوحة التحكم -->
+<div class="dashboard-container">
+
+    <!-- محتوى لوحة التحكم
+    ================================================== -->
+    <div class="dashboard-content-container" data-simplebar>
+        <div class="dashboard-content-inner">
+            <!-- عنوان لوحة التحكم -->
+
+            <div class="dashboard-headline d-flex justify-content-center">
+                <a href="#small-dialog-2" class="popup-with-zoom-anim button big ripple-effect">رسالة جديدة</a>
+            </div>
+
+            <div class="messages-container margin-top-0">
+                <!-- الرسائل -->
+                <div class="messages-inbox">
+                    <vc:all-user-messages></vc:all-user-messages>
+                </div>
+            </div>
+
+            <partial name="SmallFooterPartial" />
+
+        </div>
+    </div>
+        <partial name="DashboardPartial" />
+
+</div>
+
+<partial name="SendNewMessagePartial" />

@@ -1,0 +1,340 @@
+﻿@using Hoor.Common
+@using Hoor.Data.Models
+@using Microsoft.AspNetCore.Identity
+@model Hoor.Web.ViewModels.Contracts.SingleContractViewModel
+@inject Hoor.Services.Interfaces.IFreelancePlatform freelancePlatform
+@inject UserManager<ApplicationUser> userManager
+<!-- Titlebar
+================================================== -->
+<div class="single-page-header" data-background-image="/images/single-task.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-baseline">
+                    <div class="card shadow p-3 bg-white rounded text-center p-lg-4 ">
+                        <div class="salary-type">حالة العقد</div>
+                        <div class="margin-top-15"></div>
+                        @if (Model.StatusToString != "Informed")
+                        {
+                            @if (Model.StatusToString == "Expired")
+                            {
+
+                                <div class="bid-acceptance w-100 bg-danger text-white">
+                                    @Model.StatusName
+                                </div>
+
+                            }
+                            else
+                            {
+                                if (Model.Status == Hoor.Common.ContractStatus.Paying)
+                                {
+                                    <div class="bid-acceptance w-100 @Model.StatusColor">
+                                        انتظار
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="bid-acceptance w-100 @Model.StatusColor">
+                                        @Model.StatusName
+                                    </div>
+                                }
+
+                            }
+
+                        }
+                        else
+                        {
+                            <div class="bid-acceptance w-100 bg-danger text-white">
+                                انتظار
+                            </div>
+
+                        }
+
+
+
+
+                    </div>
+
+                    <div class="text-center">
+                        <h3 class="contract-id-text">عقد <br />@Model.Id.ToUpper()</h3>
+                    </div>
+
+                    <div class="card shadow p-3 bg-white rounded text-center p-lg-4">
+                        <div class="salary-type">ميزانية العقد</div>
+                        <div class="margin-top-15"></div>
+                        <div class="bid-acceptance w-100">$@Model.OfferFixedPrice</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    var pyment = await freelancePlatform.HoorPaymentManeger.GetPaymentByContractIDAsync(Model.Id);
+}
+<!-- Page Content
+================================================== -->
+<div class="container">
+    @if (Model.StatusToString != "Informed")
+    {
+        @if (Model.StatusToString == "Ongoing" && Model.TimeLeft > 0)
+        {
+            <div id="countdown" class="countdown blue margin-bottom-70 py-lg-4" style="direction: rtl">
+                <span id="days"></span> أيام
+                <span id="hours"></span> ساعات
+                <span id="minutes"></span> دقائق
+                <span id="seconds"></span> ثواني
+                متبقية
+            </div>
+        }
+        else if (Model.Status == Hoor.Common.ContractStatus.Paying)
+        {
+            if (this.User.IsInRole("Employer"))
+            {
+                @if (pyment is not null && pyment.Status == PaymentState.Failed.ToString())
+                {
+                    <div id="countdown" class=" bg-danger text-white countdown blue margin-bottom-70 py-lg-4" style="direction: rtl">
+                        رفظت ادارة الموقع عملية الدفع التي قمت بتنفيذها . قم بمراجهة العملية من الزر ادناه.
+                    </div>
+                }
+                else
+                {
+                    <div id="countdown" class=" bg-danger text-white countdown blue margin-bottom-70 py-lg-4" style="direction: rtl">
+                        عليك دفع المبلغ قبل بدء المستقل في العمل . بغرض ضمان حق الطرفين.
+                    </div>
+                }
+            }
+            else
+            {
+                <div id="countdown" class=" bg-warning text-black font-weight-bold countdown  margin-bottom-70 py-lg-4" style="direction: rtl">
+                    في انتظار اكمال الإجراءات الخاصة بالدفع .  سيتم ابلاغك حين الاكتمال بعدها يمكنك بدء العمل.
+                </div>
+            }
+        }
+    }
+    else
+    {
+        <div id="countdown" class=" bg-danger text-white countdown blue margin-bottom-70 py-lg-4" style="direction: rtl">
+            تم البلاغ على العقد . في انتظار مراجعة الاداره
+        </div>
+
+    }
+    <div class="row">
+        <!-- Content -->
+        <div class="col-xl-8 col-lg-8 content-right-offset text-right">
+
+            <!-- Description -->
+            <div class="single-page-section">
+                <h3 style=" text-align: center" class="margin-bottom-25">وصف الوظيفة</h3>
+                <p style=" text-align: center">@Model.OfferJobDescription</p>
+            </div>
+
+            <!-- Atachments -->
+            <div class="single-page-section">
+                <h3 style=" text-align: center">المرفقات</h3>
+                <h5 style=" text-align: center" class="margin-bottom-30 text-secondary font-italic">قم بتنزيل المرفق عن طريق النقر بزر الماوس الأيمن على الملف.</h5>
+                <div class="attachments-container">
+                    @foreach (var attachment in Model.Attachments)
+                    {
+                        <a href="@attachment.Url" download="" target="_blank" class="attachment-box ripple-effect"><span>@attachment.ShortenedName</span><i>@attachment.Extension</i></a>
+                    }
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+
+
+        <!-- Sidebar -->
+        <div class="col-xl-4 col-lg-4 text-right">
+            <div class="sidebar-container">
+
+                @if (Model.Status == Hoor.Common.ContractStatus.Paying && this.User.IsInRole("Employer"))
+                {
+
+                    <div class="bidding-signup d-flex flex-column margin-bottom-10">
+                        @if (pyment is not null && pyment.Status == PaymentState.Failed.ToString())
+                        {
+                            <form id="Edite-Payment-form" asp-action="LocleCheckout" asp-controller="Payments">
+                                <input hidden type="text" name="paymentid" value="@pyment.PaymentType" />
+                                <input hidden type="text" name="contractid" value="@Model.Id" />
+                            </form>
+                            <button type="submit" form="Edite-Payment-form"
+                                    style="font-size: larger;font-family: 'Cairo', Arial, sans-serif; margin-bottom: 10px;"
+                                    class="button  apply-now-button text-dark bg-warning ripple-effect move-on-hover full-width">
+                                <span>مراجعة عملية الدفع</span>
+                            </button>
+                        }
+                        else
+                        {
+                            <a href="#payment-partial" class="button popup-with-zoom-anim apply-now-button bg-success ripple-effect move-on-hover full-width"><span>الانتقال الى الدفع</span></a>
+                        }
+                        <a href="#cancel-contract" class="button popup-with-zoom-anim apply-now-button bg-danger ripple-effect move-on-hover full-width"><span>إلغاء</span></a>
+                    </div>
+
+                }
+                @if (this.User.IsInRole("Employer") && Model.StatusToString == "Ongoing")
+                {
+                    <!-- Buttons -->
+
+                    <div class="bidding-signup d-flex flex-column margin-bottom-10">
+                        <a href="#complete-contract" class="button popup-with-zoom-anim apply-now-button bg-success ripple-effect move-on-hover full-width margin-bottom-20"><span>اكتمال</span></a>
+                        <a href="#cancel-contract" class="button popup-with-zoom-anim apply-now-button bg-danger ripple-effect move-on-hover full-width"><span>إلغاء</span></a>
+                    </div>
+                }
+                else if (this.User.IsInRole("Employer") && Model.Status == Hoor.Common.ContractStatus.CanRq)
+                {
+                    <div class="bidding-signup d-flex flex-column margin-bottom-10">
+                        <a class="button popup-with-zoom-anim apply-now-button bg-danger ripple-effect move-on-hover full-width"><span style="color:white">انتظار التأكيد من الطرف الآخر</span></a>
+                    </div>
+                }
+                else if (this.User.IsInRole("Freelancer") && Model.StatusToString == "Ongoing")
+                {
+                    <!-- Buttons -->
+                    <div class="bidding-signup d-flex flex-column margin-bottom-10">
+                        <a href="#upload-work" class="button popup-with-zoom-anim apply-now-button ripple-effect move-on-hover full-width margin-bottom-20"><span>رفع العمل</span></a>
+                    </div>
+                }
+                else if (this.User.IsInRole("Freelancer") && Model.Status == Hoor.Common.ContractStatus.CanRq)
+                {
+                    <div class="bidding-signup d-flex flex-column margin-bottom-10">
+                        <a href="#cancel-contract-Freelance" class="button popup-with-zoom-anim apply-now-button ripple-effect move-on-hover full-width margin-bottom-20"><span>تأكيد الالغاء</span></a>
+                    </div>
+                }
+
+
+
+                <div class="sidebar-widget">
+                    <div class="bidding-signup d-flex flex-column margin-bottom-10">
+
+
+                        @if (this.User.IsInRole("Freelancer"))
+                        {
+                            <a asp-action="Conversation" asp-controller="Messages" asp-route-id="@Model.EmployerId" class="button  apply-now-button bg-info ripple-effect move-on-hover full-width margin-bottom-15"><span>دردشة مع صاحب العمل</span></a>
+                        }
+                        else
+                        {
+                            <a asp-action="Conversation" asp-controller="Messages" asp-route-id="@Model.FreelancerId" class="button  apply-now-button bg-info ripple-effect move-on-hover full-width margin-bottom-15"><span>دردشة مع المستقل</span></a>
+                        }
+                    </div>
+                    <div class="job-overview">
+                        <div class="job-overview-headline">ملخص الوظيفة</div>
+                        <div class="job-overview-inner">
+                            <ul>
+                                <li>
+                                    <i class="icon-material-outline-date-range"></i>
+                                    <span>تاريخ الإنشاء</span>
+                                    <h5>@Model.CreatedOn.ToLongDateString()</h5>
+                                </li>
+
+                                <li>
+                                    <i class="icon-material-outline-loyalty"></i>
+                                    <span>عنوان الوظيفة</span>
+                                    <h5>@Model.OfferJobTitle</h5>
+                                </li>
+                                <li>
+                                    <i class="icon-material-outline-business-center"></i>
+                                    <span>صاحب العمل</span>
+                                    <h5>@Model.EmployerFirstName @Model.EmployerLastName</h5>
+                                </li>
+                                <li>
+                                    <i class="icon-material-outline-person-pin"></i>
+                                    <span>المستقل</span>
+                                    <h5>@Model.FreelancerFirstName @Model.FreelancerLastName</h5>
+                                </li>
+                                <li>
+                                    <i class="icon-material-outline-access-time"></i>
+                                    <span>مدة التسليم</span>
+                                    <h5>@Model.OfferDeliveryDays أيام</h5>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Model.Status == Hoor.Common.ContractStatus.Ongoing || Model.Status == Hoor.Common.ContractStatus.CanRq)
+            {
+
+                <div class="bidding-signup d-flex flex-column margin-bottom-10">
+                    <a href="#Inform-contract" class="button popup-with-zoom-anim apply-now-button ripple-effect move-on-hover full-width margin-bottom-20"><span>إبلاغ !</span></a>
+                </div>
+            }
+
+        </div>
+        @* a *@
+    </div>
+</div>
+<!-- Spacer -->
+<div class="margin-top-50"></div>
+<!-- Spacer / End-->
+
+<div class="padding-bottom-100"></div>
+
+
+<partial name="BigFooterPartial" />
+<partial name="/Views/Shared/CompleteContractPartial.cshtml" model="@Model" />
+<partial name="/Views/Shared/PaymentPartial.cshtml" model="@Model" />
+<partial name="/Views/Shared/CancelContractPartial.cshtml" model="@Model" />
+<partial name="/Views/Shared/FreelancerCancleContract.cshtml" model="@Model" />
+<partial name="/Views/Shared/UploadContractWorkPartial.cshtml" model="@Model" />
+<partial name="/Views/Shared/InformContractPartial.cshtml" model="@Model" />
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // تحديد عناصر الإدخال
+        const fileInput = document.getElementById("upload");
+
+        // الحد الأقصى للحجم بالبايت (20 ميجا = 20 * 1024 * 1024)
+        const maxSize = 20 * 1024 * 1024;
+
+        // التحقق من الملف عند تغييره
+        fileInput.addEventListener("change", function () {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+
+                if (file.size > maxSize) {
+                    alert("⚠️ الحد الأقصى لحجم الملف هو 20MB. الرجاء اختيار ملف أصغر.");
+                    fileInput.value = ""; // إفراغ الحقل لإلغاء اختيار الملف
+                }
+            }
+        });
+    });
+</script>
+
+@if (Model.StatusToString == "Ongoing")
+{
+    <script>
+
+        (function () {
+            const second = 1000,
+                minute = second * 60,
+                hour = minute * 60,
+                day = hour * 24;
+
+                    let contractDeadline = "@Model.ContractDeadline.ToString("yyyy-MM-ddTHH:mm:ss")",
+                countDown = new Date(contractDeadline).getTime(),
+                x = setInterval(function () {
+
+                    let now = new Date().getTime(),
+                        distance = countDown - now;
+
+                        document.getElementById("days").innerText = Math.floor(distance / (day)),
+                        document.getElementById("hours").innerText = Math.floor((distance % (day)) / (hour)),
+                        document.getElementById("minutes").innerText = Math.floor((distance % (hour)) / (minute)),
+                        document.getElementById("seconds").innerText = Math.floor((distance % (minute)) / second);
+
+                    //do something later when date is reached
+                    if (distance < 0) {
+                        document.getElementById("days").innerText = 0,
+                        document.getElementById("hours").innerText = 0,
+                        document.getElementById("minutes").innerText = 0,
+                        document.getElementById("seconds").innerText = 0;
+
+                        clearInterval(x);
+                    }
+                    //seconds
+                }, 0)
+        }());
+    </script>
+}

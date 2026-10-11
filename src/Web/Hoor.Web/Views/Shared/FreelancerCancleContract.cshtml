@@ -1,0 +1,35 @@
+﻿@model Hoor.Web.ViewModels.Contracts.SingleContractViewModel
+
+<div id="cancel-contract-Freelance" class="zoom-anim-dialog mfp-hide small-dialog-1">
+
+    <!-- التبويبات -->
+    <div class="sign-in-form">
+
+        <ul class="popup-tabs-nav">
+            <li><a href="#tab1">إلغاء العقد</a></li>
+        </ul>
+
+        <div class="popup-tabs-container">
+
+            <!-- التبويب -->
+            <div class="popup-tab-content" id="tab">
+
+                <!-- نص الترحيب -->
+                <div class="welcome-text">
+                    <h3>هل أنت متأكد أنك تريد إلغاء العقد مع <br />@Model.EmployerFirstName @Model.EmployerLastName؟</h3>
+                    @* <h5 class="margin-bottom-30 text-secondary font-italic"> لن يتم الغاء العقد بالفعل حتى يقوم المستقل بالموافقة على الإلغاء</h5> *@
+
+                </div>
+
+                <form id="cancel-contract-form" asp-action="CancelfreelancerContract" asp-controller="Contracts">
+                    <input type="text" hidden name="action" value="cancel" />
+                    <input type="text" hidden name="contractId" value="@Model.Id" />
+                </form>
+
+                <!-- زر -->
+                <button class="margin-top-15 button w-100 button-sliding-icon ripple-effect" type="submit" form="cancel-contract-form">إلغاء <i class="icon-material-outline-arrow-right-alt"></i></button>
+
+            </div>
+        </div>
+    </div>
+</div>

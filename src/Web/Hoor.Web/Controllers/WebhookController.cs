@@ -1,0 +1,75 @@
+﻿namespace Hoor.Web.Controllers
+{
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+
+    using Hoor.Common;
+    using Hoor.Data.Models;
+    using Hoor.Services.Interfaces;
+    using Hoor.Web.ViewModels.Notifications;
+    using Microsoft.AspNetCore.Mvc;
+    using Stripe;
+
+    public class WebhookController : BaseController
+    {
+        private readonly IFreelancePlatform freelancePlatform;
+
+        public WebhookController(IFreelancePlatform freelancePlatform)
+        {
+            this.freelancePlatform = freelancePlatform;
+        }
+
+        [HttpPost("/webhook")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> ProcessWebhookEvent()
+        {
+            var json = await new StreamReader(this.HttpContext.Request.Body).ReadToEndAsync();
+
+            // Validation
+            const string endpointSecret = GlobalConstants.StripeWebHookEndpointSecret;
+
+            try
+            {
+                var stripeEvent = EventUtility
+                    .ConstructEvent(json, this.Request.Headers["Stripe-Signature"], endpointSecret);
+
+                if (stripeEvent.Type == Events.PaymentIntentSucceeded)
+                {
+                    var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+                    var connectedAccountId = stripeEvent.Account;
+                    var contractId = paymentIntent.Metadata["contractId"];
+                    var contract = await this.freelancePlatform.ContractManager
+                        .GetContractByIdAsync<ContractNotificationViewModel>(contractId);
+
+                    await this.freelancePlatform.ContractManager
+                        .SetContractStatusAsync(ContractStatus.Finished, contractId);
+                    await this.freelancePlatform.JobManager
+                        .SetJobStatusAsync(JobStatus.Closed, contract.JobId);
+
+                    var completionNotification = new Notification
+                    {
+                        Icon = GlobalConstants.ContractCompletetionIcon,
+                        Text = $"{contract.EmployerFirstName} {contract.EmployerLastName} " +
+                        $"completed your contract for job {contract.JobTitle}",
+                        RedirectAction = "MyContracts",
+                        RedirectController = "Contracts",
+                    };
+
+                    await this.freelancePlatform.NotificationManager
+                        .CreateAsync(completionNotification, contract.FreelancerId);
+                }
+                else
+                {
+                    Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+                }
+
+                return this.Ok();
+            }
+            catch (Exception)
+            {
+                return this.BadRequest();
+            }
+        }
+    }
+}

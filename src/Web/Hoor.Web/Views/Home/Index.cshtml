@@ -1,0 +1,248 @@
+﻿@using Hoor.Data.Models
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> signInManager
+
+@model Hoor.Web.ViewModels.Home.HomeViewModel
+
+@{
+    this.ViewData["Title"] = "الصفحة الرئيسية";
+}
+
+<!-- لافتة المقدمة
+================================================== -->
+<!-- أضف فئة "disable-gradient" لتمكين تراكب الخلفية المتسق -->
+<div class="intro-banner" data-background-image="/images/home-background.jpg">
+    <div class="container">
+
+        @if (!this.signInManager.IsSignedIn(this.User))
+        {
+            <!-- مقدمة العنوان -->
+            <div class="row" style="direction:rtl">
+                <div class="col-md-12 text-right">
+                    <div class="banner-headline">
+                        <h3 style="direction: rtl;     font-size: 23px;">
+                            <strong>قم بتوظيف مستقلين أو كن مستقلًا لأي وظيفة، في أي وقت.</strong>
+                            <br>
+                            <span style="color:black">آلاف الشركات الصغيرة تستخدم <strong class="color">HooR</strong> لتحويل أفكارهم إلى واقع.</span>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- الإحصائيات -->
+        <div class="row" >
+            <div class="col-md-12" style="text-align:center">
+                <ul class="intro-stats margin-top-45 ">
+                    <li >
+                        <strong class="counter">@Model.JobsCount</strong>
+                        <span>الوظائف المنشورة</span>
+                    </li>
+                    <li>
+                        <strong class="counter">@Model.OffersCount</strong>
+                        <span>العروض المقدمة</span>
+                    </li>
+                    <li>
+                        <strong class="counter">@Model.FreelancersCount</strong>
+                        <span>المستقلين</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@if (!this.signInManager.IsSignedIn(this.User))
+{
+    <!-- صناديق الأيقونات -->
+    <div class="section padding-top-65 padding-bottom-65">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-xl-12">
+                    <!-- عنوان القسم -->
+                    <div class="section-headline centered margin-top-0 margin-bottom-5">
+                        <h3>كيف يعمل؟</h3>
+                    </div>
+                </div>
+                   <div class="col-xl-4 col-md-4">
+                    <!-- صندوق الأيقونة -->
+                    <div class="icon-box with-line">
+                        <!-- أيقونة -->
+                        <div class="icon-box-circle">
+                            <div class="icon-box-circle-inner">
+                                <i class="icon-line-awesome-smile-o"></i>
+                                <div class="icon-box-check"><i class="icon-material-outline-check"></i></div>
+                            </div>
+                        </div>
+                        <h3>تلقي العمل أو الحصول على أجر</h3>
+                        <p>عند قبول عرض لوظيفة، تقوم المنصة بإنشاء عقد بين الطرفين، والذي يمكن أن يتم إكماله أو إلغاؤه بناءً على العمل المقدم.</p>
+                    </div>
+                </div>  
+
+                <div class="col-xl-4 col-md-4">
+                    <!-- صندوق الأيقونة -->
+                    <div class="icon-box with-line">
+                        <!-- أيقونة -->
+                        <div class="icon-box-circle">
+                            <div class="icon-box-circle-inner">
+                                <i class="icon-material-outline-business-center"></i>
+                                <div class="icon-box-check"><i class="icon-material-outline-check"></i></div>
+                            </div>
+                        </div>
+                        <h3>انشر وظيفة أو إرسال عرض</h3>
+                        <p>اعتمادًا على الحساب المنشأ، لديك إمكانية نشر الوظائف أو إرسال العروض.</p>
+                    </div>
+                </div>
+
+             
+                
+                <div class="col-xl-4 col-md-4">
+                    <!-- صندوق الأيقونة -->
+                    <div class="icon-box">
+                        <!-- أيقونة -->
+                        <div class="icon-box-circle">
+                            <div class="icon-box-circle-inner">
+                                <i class="icon-line-awesome-lock"></i>
+                                <div class="icon-box-check"><i class="icon-material-outline-check"></i></div>
+                            </div>
+                        </div>
+                        <h3>إنشاء حساب</h3>
+                        <p>اختر بين أن تكون مستقلًا أو صاحب عمل.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- صناديق الأيقونات / النهاية -->
+    <div class="padding-bottom-10"></div>
+}
+else
+{
+    if (this.User.IsInRole("Employer") && Model.Freelancers.Any())
+    {
+            <!-- أفضل المستقلين تصنيفًا -->
+            <div class="section gray padding-top-65 padding-bottom-70 full-width-carousel-fix">
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-xl-12">
+                            <!-- عنوان القسم -->
+                            <div class="section-headline margin-top-0 margin-bottom-25">
+                                <h3 style="text-align:center">أفضل المستقلين تصنيفًا</h3>
+                                <a asp-action="AllFreelancers" asp-controller="Users" class="headline-link" >تصفح جميع المستقلين</a>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-12">
+                            <div class="default-slick-carousel freelancers-container freelancers-grid-layout">
+                                @foreach (var freelancer in Model.Freelancers)
+                                {
+                                    <!--مستقل -->
+                                    <div class="freelancer">
+
+                                        <!-- نظرة عامة -->
+                                        <div class="freelancer-overview">
+                                            <div class="freelancer-overview-inner">
+
+                                                <!-- صورة رمزية -->
+                                                <div class="freelancer-avatar">
+                                                    <a asp-action="Freelancer" asp-controller="Users" asp-route-id="@freelancer.Id"><img src="@freelancer.ProfileImageUrl" alt=""></a>
+                                                </div>
+
+                                                <!-- الاسم -->
+                                                <div class="freelancer-name">
+                                                    <h4><a asp-action="Freelancer" asp-controller="Users" asp-route-id="@freelancer.Id">@freelancer.FirstName @freelancer.LastName <img class="flag" src="/images/flags/@(freelancer.Location).svg" alt="" data-tippy-placement="top"></a></h4>
+                                                    <span>@freelancer.TagName</span>
+                                                </div>
+
+                                                <!-- التقييم -->
+                                                <div class="freelancer-rating">
+                                                    <div class="star-rating" data-rating="@freelancer.AverageRating"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- التفاصيل -->
+                                        <div class="freelancer-details">
+                                            <div class="freelancer-details-list">
+                                                <ul>
+                                                    <li>الموقع <strong><i class="icon-material-outline-location-on"></i> @freelancer.LocationToString</strong></li>
+                                                    <li>الوظائف المكتملة <strong>@freelancer.JobsDone</strong></li>
+                                                    <li>نجاح الوظيفة <strong>@freelancer.JobSuccess%</strong></li>
+                                                </ul>
+                                            </div>
+                                            <a asp-action="Freelancer" asp-controller="Users" asp-route-id="@freelancer.Id" class="button button-sliding-icon ripple-effect">عرض الملف الشخصي <i class="icon-material-outline-arrow-right-alt"></i></a>
+                                        </div>
+                                    </div>
+                                    <!-- مستقل / النهاية -->
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- أفضل المستقلين تصنيفًا / النهاية-->
+    }
+    else if (this.User.IsInRole("Freelancer") && Model.Jobs.Any())
+    {
+        <!-- الوظائف المميزة -->
+        <div class="section gray margin-top-45 padding-top-65 padding-bottom-75">
+            <div class="container" style="direction:rtl; text-align:right ">
+                <div class="row">
+                    <div class="col-xl-12">
+
+                        <!-- عنوان القسم -->
+                        <div class="section-headline margin-top-0 margin-bottom-35">
+                            <h3>الوظائف المتوفرة</h3>
+                            <a asp-action="All" asp-controller="Jobs" class="headline-link">تصفح جميع الوظائف</a>
+                        </div>
+
+                        <!-- حاوية الوظائف -->
+                        <div class="listings-container compact-list-layout margin-top-35">
+                            @foreach (var job in Model.Jobs)
+                            {
+                                <!-- قائمة الوظائف -->
+                                <a asp-action="Index" asp-controller="Jobs" asp-route-id="@job.Id" class="job-listing with-apply-button">
+
+                                    <!-- تفاصيل قائمة الوظائف -->
+                                    <div class="job-listing-details">
+
+                                        <!-- الشعار -->
+                                        <div class="job-listing-company-logo">
+                                            <img src="@job.EmployerProfileImageUrl" alt="">
+                                        </div>
+
+                                        <!-- Details -->
+                                        <div class="job-listing-description">
+                                            <h3 class="job-listing-title">@job.Title</h3>
+
+                                            <!-- Job Listing Footer -->
+                                            <div class="job-listing-footer">
+                                                <ul>
+                                                    <li><i class="icon-material-outline-business"></i> @job.EmployerFirstName @job.EmployerLastName</li>
+                                                    <li><i class="icon-material-outline-location-on"></i> @job.EmployerLocationToString</li>
+                                                    <li><i class="icon-material-outline-business-center"></i> @job.CategoryName</li>
+                                                    <li><i class="icon-material-outline-access-time"></i>Posted @job.TimeAgo</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <!-- Apply Button -->
+                                        <span class="list-apply-button ripple-effect"> تطبيق الان</span>
+                                    </div>
+                                </a>
+                            }
+                        </div>
+                        <!-- Jobs Container / End -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Featured Jobs / End -->
+    }
+}
+<div class="margin-bottom-100"></div>
+<partial name="BigFooterPartial" />

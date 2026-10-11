@@ -1,0 +1,146 @@
+﻿@using Hoor.Data.Models
+@using Microsoft.AspNetCore.Antiforgery
+@using Hoor.Common
+@using Hoor.Services.Interfaces
+@inject IFreelancePlatform freelancePlatform;
+@inject IAntiforgery antiforgery
+
+@model Hoor.Web.ViewModels.Contracts.SingleContractViewModel
+@{
+    List<PaymentMethod> paymentMethods= await freelancePlatform.HoorPaymentManeger.GetAllMethodAsync();
+
+}
+
+
+<style>
+    /* تنسيق العناوين */
+    .group-title {
+    margin-bottom: 20px;
+    position: relative;
+    top: -10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    }
+
+    /* الحاوية العامة لكل مجموعة */
+    .group-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 80vh;
+    }
+
+    /* تنسيق شبكة العناصر */
+    .group-content {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* شبكة 3 أعمدة */
+    gap: 20px; /* مسافة بين العناصر */
+    width: 90%; /* عرض الحاوية */
+    margin: 0 auto;
+    justify-items: center;
+    }
+
+    /* تنسيق كل عنصر */
+    .grid-item {
+    text-align: center;
+    max-width: 150px;
+    }
+
+    .item-icon {
+    width: 100px;
+    height: 100px;
+    object-fit: scale-down; /* لضمان أن الصور لا تتشوه */
+    border-radius: 8px; /* زوايا مستديرة */
+    border: 2px solid #ddd;
+    }
+
+    .item-name {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #555;
+    }
+
+    /* الخط الفاصل العمودي */
+    .vertical-divider {
+    width: 2px;
+    background: linear-gradient(to bottom, #4CAF50, #8BC34A);
+    height: 80%; /* جعل الخط يغطي الحاويتين */
+    margin: auto 20px; /* مسافة بين الخط والمجموعتين */
+    }
+</style>
+
+
+<div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="d-flex flex-column align-items-center" style="width: 100%;">
+        <div class="d-flex justify-content-between align-items-start" style="width: 100%;">
+            <!-- المجموعة الأولى -->
+            <div class="flex-fill text-center group-container">
+                <h2 class="group-title">الخدمات المحلية</h2>
+                <div class="group-content">
+                    @foreach (var item in paymentMethods)
+                    {
+                        if (item.PaymentType == "Locle")
+                        {
+                            <div class="grid-item">
+                                <form id="Checkout-contract-form-@item.Id" asp-action="LocleCheckout" asp-controller="Payments">
+                                    <input hidden type="text" name="paymentid" value="@item.Id" />
+                                <input hidden type="text" name="contractid" value="@Model.Id" />
+                                </form>
+                                <button type="submit" form="Checkout-contract-form-@item.Id">
+                                    <img src="@item.Icon" class="item-icon" />
+                                    <p class="item-name">@item.Name</p>
+                                </button>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <!-- الخط الفاصل -->
+            <div class="vertical-divider"></div>
+
+            <!-- المجموعة الثانية -->
+            <div class="flex-fill text-center group-container">
+                <h2 class="group-title">خدمات عامة</h2>
+                <div class="group-content">
+                    @foreach (var item in paymentMethods)
+                    {
+                        if (item.PaymentType != "Locle" )
+                        {
+                            if (item.PaymentType != "Card")
+                            {
+                                <div class="grid-item">
+                                    <form id="Checkout-contract-form-@item.Id" asp-action="LocleCheckout" asp-controller="Payments">
+                                        <input hidden type="text" name="paymentid" value="@item.Id" />
+                                        <input hidden type="text" name="contractid" value="@Model.Id" />
+                                    </form>
+                                    <button type="submit" form="Checkout-contract-form-@item.Id">
+                                        <img src="@item.Icon" class="item-icon" />
+                                        <p class="item-name">@item.Name</p>
+                                    </button>
+                                </div>
+                            }else{
+                                <div class="grid-item">
+                                    <form id="Checkout-contract-form-@item.Id" asp-action="Checkout" asp-controller="Payments">
+                                        <input type="text" hidden name="action" value="complete" />
+                                        <input type="text" hidden name="contractId" value="@Model.Id" />
+                                     </form>
+                                    <button type="submit" form="Checkout-contract-form-@item.Id">
+                                        <img src="@item.Icon" class="item-icon" />
+                                        <p class="item-name">@item.Name</p>
+                                    </button>
+                                </div>
+
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

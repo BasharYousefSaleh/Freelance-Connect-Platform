@@ -1,0 +1,74 @@
+﻿@using Hoor.Data.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> userManager
+
+@{
+    var user = await userManager.GetUserAsync(User);
+}
+<!-- شريط جانبي للوحة التحكم
+   ================================================== -->
+<div class="dashboard-sidebar"  >
+    <div class="dashboard-sidebar-inner" data-simplebar  style="direction:rtl; text-align:center">
+        <div class="dashboard-nav-container">
+
+            <!-- مشغل التنقل المتجاوب -->
+            <a href="#" class="dashboard-responsive-nav-trigger">
+                <span class="hamburger hamburger--collapse">
+                    <span class="hamburger-box">
+                        <span class="hamburger-inner"></span>
+                    </span>
+                </span>
+                <span class="trigger-title">تنقل لوحة التحكم</span>
+            </a>
+
+            <!-- التنقل -->
+            <div class="dashboard-nav" >
+                <div class="dashboard-nav-inner">
+                    <ul data-submenu-title="الرئيسية">
+                        <li><a asp-action="Index" asp-controller="Dashboard"><i class="icon-material-outline-dashboard"></i> لوحة التحكم</a></li>
+                        <li><a asp-action="All" asp-controller="Messages"><i class="icon-material-outline-question-answer"></i> الرسائل</a></li>
+                    </ul>
+
+                    <ul data-submenu-title="إدارة">
+                        @if (this.User.IsInRole("Freelancer"))
+                        {
+                            <li class="active-submenu">
+                                <a href="javascript:void(0);"><i class="icon-material-outline-business-center"></i> العروض</a>
+                                <ul>
+                                    <li><a asp-action="MyOffers" asp-controller="Offers">عروضي</a></li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="active-submenu">
+                                <a href="javascript:void(0);"><i class="icon-material-outline-business-center"></i> الوظائف</a>
+                                <ul>
+                                    <li><a asp-action="MyJobs" asp-controller="Jobs">وظائفي</a></li>
+                                    <li><a asp-action="AddJob" asp-controller="Jobs">إضافة وظيفة</a></li>
+                                </ul>
+                            </li>
+                        }
+                        <li class="active-submenu">
+                            <a href="javascript:void(0);"><i class="icon-material-outline-business-center"></i> العقود</a>
+                            <ul>
+                                <li><a asp-action="MyContracts" asp-controller="Contracts">عقودي</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul data-submenu-title="الحساب">
+                        <li><a asp-action="Settings" asp-controller="Users"><i class="icon-material-outline-settings"></i> الإعدادات</a></li>
+                        <li>
+                            <a role="button" href="javascript:void(0)" aria-label="logout" onclick="document.getElementById('logout').submit()"><i class="icon-material-outline-power-settings-new"></i>تسجيل الخروج</a>
+                        </li>
+                    </ul>
+                    <form id="logout" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" method="post"></form>
+                </div>
+            </div>
+            <!-- التنقل / نهاية -->
+
+        </div>
+    </div>
+</div>
+<!-- شريط جانبي للوحة التحكم / نهاية -->

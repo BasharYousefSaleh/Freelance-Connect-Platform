@@ -1,0 +1,84 @@
+﻿@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery antiforgery
+
+@model IEnumerable<Hoor.Web.ViewModels.Notifications.UserNotificationViewModel>
+
+@{
+    var notificationsCount = (int)ViewData["NotificationsCount"];
+    var tokenSet = antiforgery.GetAndStoreTokens(this.Context);
+}
+
+<!-- الإشعارات -->
+<div class="header-notifications" >
+
+    <!-- الزر -->
+    <div class="header-notifications-trigger">
+        <a role="button"><i class="icon-feather-bell"></i><span id="notifications-count">@notificationsCount</span></a>
+    </div>
+
+    <!-- القائمة المنسدلة -->
+    <div class="header-notifications-dropdown"   style="direction:rtl; text-align:right ">
+
+        <div class="header-notifications-headline">
+            <h4>الإشعارات</h4>
+            @if (notificationsCount > 0)
+            {
+
+                <button type="submit" form="mark-all-form" class="mark-as-read ripple-effect-dark" title="تحديد الكل كمقروء" data-tippy-placement="left">
+                    <i class="icon-feather-check-square"></i>
+                </button>
+            }
+        </div>
+
+        <div class="header-notifications-content">
+            <div class="header-notifications-scroll" data-simplebar>
+                <ul>
+                    @if (notificationsCount > 0)
+                    {
+                        @foreach (var notification in Model)
+                        {
+                            <!-- الإشعار -->
+                            <li class="notifications-not-read">
+                                <a id="notification-link" onclick="MarkNotificationAsRead('@notification.Id');" asp-action="@notification.RedirectAction" asp-controller="@notification.RedirectController" asp-route-id="@notification.RedirectId">
+                                    <span class="notification-icon"><i class="@notification.Icon"></i></span>
+                                    <span class="notification-text">
+                                        <span>@notification.Text</span>
+                                    </span>
+                                </a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <!-- الإشعار -->
+                        <li class="notifications-not-read">
+                            <a>
+                                <span class="notification-text">
+                                    <span>لا توجد إشعارات جديدة حالياً.</span>
+                                </span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function MarkNotificationAsRead(id) {
+        fetch('https://Hoor.azurewebsites.net/Notifications/MarkNotificationAsRead', {
+            method: 'POST',
+            body: JSON.stringify(id),
+            headers: {
+                'Content-Type': 'application/json',
+                '@tokenSet.HeaderName': '@tokenSet.RequestToken'
+            },
+        })
+            .then(res => res.json())
+            .then(obj => {
+                document.getElementById('notifications-count').innerHTML = obj.count;
+            })
+            .catch(error => console.log(error));
+    }
+</script>

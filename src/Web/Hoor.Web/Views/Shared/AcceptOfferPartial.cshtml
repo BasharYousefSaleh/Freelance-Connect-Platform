@@ -1,0 +1,43 @@
+﻿@model Hoor.Web.ViewModels.Offers.JobOfferViewModel
+<!-- Bid Acceptance Popup
+<!-- نافذة قبول العرض
+================================================== -->
+<div id="@(Model.DialogNumber-1)" class="zoom-anim-dialog mfp-hide small-dialog-1">
+
+    <!-- التبويبات -->
+    <div class="sign-in-form">
+
+        <ul class="popup-tabs-nav">
+            <li><a href="#tab1">قبول العرض</a></li>
+        </ul>
+
+        <div class="popup-tabs-container">
+
+            <!-- التبويب -->
+            <div class="popup-tab-content" id="tab">
+
+                <!-- نص الترحيب -->
+                <div class="welcome-text">
+                    <h3>قبول العرض من @Model.FreelancerFirstName @Model.FreelancerLastName لـ</h3>
+                    
+                    <div class="bid-acceptance margin-top-30">
+                        $@Model.FixedPrice
+                    </div>
+
+                </div>
+
+                <form id="accept-offer-form" asp-action="AcceptOffer" asp-controller="Offers">
+                    <input type="text" hidden name="offerId" value="@Model.Id"/>
+                    <input type="text" hidden name="jobId" value="@Model.JobId"/>
+                </form>
+
+                <!-- زر -->
+                <button class="margin-top-15 button w-100 button-sliding-icon ripple-effect" type="submit" form="accept-offer-form">قبول <i class="icon-material-outline-arrow-right-alt"></i></button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- نافذة قبول العرض / نهاية -->
+
+<!-- Bid Acceptance Popup / End -->

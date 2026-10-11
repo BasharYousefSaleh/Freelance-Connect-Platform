@@ -1,0 +1,40 @@
+﻿namespace Hoor.Web.ViewModels.Users
+{
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+
+    using Hoor.Common;
+    using Hoor.Data.Models;
+    using Hoor.Services.Mapping;
+    using Hoor.Web.ViewModels.Reviews;
+
+    public class BaseUserViewModel : IMapFrom<ApplicationUser>
+    {
+        public string Id { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string TagName { get; set; }
+
+        public string Description { get; set; }
+
+        public string Email { get; set; }
+
+        public Country Location { get; set; }
+
+        public string ProfileImageUrl { get; set; }
+
+        public IEnumerable<ReviewsListViewModel> Reviews { get; set; }
+            = new HashSet<ReviewsListViewModel>();
+
+        public double AverageRating
+            => this.Reviews.Any() ? Math.Round(this.Reviews.Select(x => x.Rating).Average(), 2) : 0;
+
+        public string LocationToString
+            => this.Location.GetAttribute<DisplayAttribute>().Name;
+    }
+}

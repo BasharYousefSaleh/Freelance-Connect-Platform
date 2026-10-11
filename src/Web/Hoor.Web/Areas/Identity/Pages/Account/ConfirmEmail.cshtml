@@ -1,0 +1,19 @@
+﻿@page
+@model Hoor.Web.Areas.Identity.Pages.Account.ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirm Email";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Email Confirmation</h1>
+    <p>@Model.StatusMessage</p>
+    <p></p>
+    <p>سيتم تحويلك مباشرتا انتظر لحضات...</p>
+</div>
+
+<script>
+    // إعادة التوجيه بعد 5 ثوانٍ
+    setTimeout(function () {
+        window.location.href = "@(Model.StatusMessage != "Error confirming your email." ? Model.Request.Query["returnUrl"] : Url.Content("~/"))";
+    }, 5000); // 5000 ميلي ثانية = 5 ثوانٍ
+</script>

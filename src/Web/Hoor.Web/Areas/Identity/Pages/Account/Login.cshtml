@@ -1,0 +1,58 @@
+﻿@page "/Login"
+@model LoginModel
+
+@{
+    ViewData["Title"] = "تسجيل الدخول";
+}
+
+<div class="margin-top-100"></div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-xl-6 offset-xl-3">
+
+            <div class="login-register-page">
+                <div class="welcome-text">
+                    <h3>نحن سعداء برؤيتك مجددًا!</h3>
+                    <span>لا تملك حسابًا؟ <a href="Register">سجل الآن!</a></span>
+                </div>
+
+                <form id="login-form" method="post" style="direction:rtl">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <div class="input-with-icon-left" >
+                        <i class="icon-material-outline-account-circle"></i>
+                        <input asp-for="Input.Username" type="text" class="input-text with-border" placeholder="اسم المستخدم" required />
+                        <span asp-validation-for="Input.Username" class="text-danger"></span>
+                    </div>
+
+                    <div class="input-with-icon-left">
+                        <i class="icon-material-baseline-mail-outline"></i>
+                        <input asp-for="Input.Email" type="text" class="input-text with-border" placeholder="البريد الإلكتروني" required />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="input-with-icon-left">
+                        <i class="icon-material-outline-lock"></i>
+                        <input asp-for="Input.Password" type="password" class="input-text with-border" placeholder="كلمة المرور" required />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                </form>
+
+                <button class="button full-width button-sliding-icon ripple-effect margin-top-10" form="login-form" type="submit">تسجيل الدخول <i class="icon-material-outline-arrow-right-alt"></i></button>
+                <div class="text-center">
+                    <a href="/ForgetPassword">نسيت كلمة المرور</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="margin-bottom-100"></div>
+
+<partial name="BigFooterPartial" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
