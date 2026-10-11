@@ -175,70 +175,77 @@ Follow these steps to run the project locally:
 - **.NET Framework** or **.NET SDK** installed.
 - **SQL Server** (LocalDB or full instance).
 
-### ⚙️ Setup Steps
+ ### ⚙️ Setup Steps
+
 - **Step 1 — Clone the repository:**
   ```bash
   git clone https://github.com/BasharYousefSaleh/Freelance-Connect-Platform.git
+  ```
 
-  
-Step 2 — Open the solution:
-Open src/Hoor.sln in Visual Studio.
+- **Step 2 — Open the solution:**
+  Open `src/Hoor.sln` in Visual Studio.
 
-Step 3 — Configure the database:
-Update the connection string in Web.config or appsettings.json.
+- **Step 3 — Configure the database:**
+  Update the connection string in `Web.config` or `appsettings.json`.
 
-Step 4 — Run migrations:
-Update-Database
+- **Step 4 — Run migrations:**
+  ```
+  Update-Database
+  ```
 
-Step 5 — Build and run:
-Press F5 in Visual Studio.
+- **Step 5 — Build and run:**
+  Press `F5` in Visual Studio.
 
-🎓 Academic Context
-This project was developed as a graduation project for the Bachelor of Science in Information Technology.
+---
 
-🏫 University
-Al-Hikma University, Dhamar, Yemen.
+## 🎓 Academic Context
 
-📊 Academic Performance
-Project Grade: 95% (Excellent).
+This project was developed as a **graduation project** for the Bachelor of Science in Information Technology.
 
-Final Semester GPA: 93% (Excellent).
+### 🏫 University
+- **Al-Hikma University**, Dhamar, Yemen.
 
-Overall GPA: 77.06% (Good).
+### 📊 Academic Performance
+- **Project Grade:** 95% (Excellent).
+- **Final Semester GPA:** 93% (Excellent).
+- **Overall GPA:** 77.06% (Good).
 
-📅 Timeline
-Duration: November 2024 – February 2025.
+### 📅 Timeline
+- **Duration:** November 2024 – February 2025.
 
-👤 Author
-Bashar Yousef Saleh Al-Kharbi
+---
 
-🎓 Education
-B.Sc. in Information Technology — Al-Hikma University (2025).
+## 👤 Author
 
-📬 Contact
-📧 Email: bsharalkhrby92@gmail.com
+**Bashar Yousef Saleh Al-Kharbi**
 
-🔗 GitHub: @BasharYousefSaleh
+### 🎓 Education
+- B.Sc. in Information Technology — Al-Hikma University (2025).
 
-📱 Phone: +967 778014486
+### 📬 Contact
+- 📧 Email: bsharalkhrby92@gmail.com
+- 🔗 GitHub: [@BasharYousefSaleh](https://github.com/BasharYousefSaleh)
+- 📱 Phone: +967 778014486
 
-🎯 Interests
-Full-Stack Web Development
+### 🎯 Interests
+- Full-Stack Web Development
+- Mobile Application Development (Flutter)
+- Artificial Intelligence & Big Data
+- Cloud Computing & Cybersecurity
 
-Mobile Application Development (Flutter)
+---
 
-Artificial Intelligence & Big Data
+## 📄 License
 
-Cloud Computing & Cybersecurity
+### ✅ Permitted Use
+- Academic and personal use.
 
-📄 License
-✅ Permitted Use
-Academic and personal use.
+### ⚠️ Commercial Use
+- For commercial use, please contact the author.
 
-⚠️ Commercial Use
-For commercial use, please contact the author.
+### 📧 Contact for Licensing
+- Email: bsharalkhrby92@gmail.com
 
-📧 Contact for Licensing
-Email: bsharalkhrby92@gmail.com
+---
 
 ⭐ If you find this project useful, please consider giving it a star!
